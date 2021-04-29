@@ -10,14 +10,18 @@ Proyecto final de la materia gráficas computacionales
 ## Requerimientos funcionales
 * Pase de un cuadro a otro
 * Animaciones en ciertos assets.
+* Colocar objetos correspondientes (incluyendo modelos) a cada escena: escalarlos (si aplica), ponerles sus texturas, iluminar escenas.
+* Agregar animación a modelos que la tengan, o trasladar modelos que no tengan animación.
+* Pasar de una viñeta a otra
 
 ## Plan de trabajo
 ### Milestones para alcanzar/entregar semana 11 (Apr 29).
-- [] Escribir la historia, generar sucesión de eventos significativa, que quepa en un número de viñetas acordado con el profesor.
-- [] Tener un storyboard con entre 5 y 6 cuadros.
-- [] Definir los assets a emplear por cuadro.
-- [] Buscar y ya tener los assets escenario.
-- [] Buscar y ya tener los assets no-escenario.
+- [x] (@IrvFA) Escribir la historia, generar sucesión de eventos significativa, que quepa en un número de viñetas acordado con el profesor.
+- [x] (@IrvFA y @r7perezyera) Tener un storyboard con entre 5 y 6 cuadros.
+- [x] Definir los assets a emplear por cuadro.
+  - [x] @IrvFA Buscará y obtendrá los assets escenario y no-escenario para las escenas 1, 3, 5.
+  - [x] @r7perezyera Buscará y obtendrá los assets escenario y no-escenario para las escenas 2, 4, 6.
+- [] Validar con el profesor preguntas al momento, rumbo del trabajo.
 
 
 ---
