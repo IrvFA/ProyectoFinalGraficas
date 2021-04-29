@@ -15,9 +15,13 @@ let roadMapUrl = "../Assets/Scene_1/Road.jpg";
 let canvasUrl = "../Assets/canvas_background.jpg"
 let sunriseUrl = "../Assets/Scene_1/sunrise_background.jpg"
 let grassUrl = "../Assets/Scene_3/Grass/Vol_42_1_Base_Color.png"
-let treeModelUrl = {obj: "../Assets/Scene_6/moon.obj", mtl: "../Assets/Scene_6/moon.mtl"}
-
+let pineTreeModelUrl = {obj: "../Assets/Scene_1/pineTree.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl"};
+let ballTreeModelUrl = {obj: "../Assets/Scene_1/ballTree.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl"};
+let bushTreeModelUrl = {obj: "../Assets/Scene_1/bush.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl"};
+let rock2ModelUrl = {obj: "../Assets/Scene_1/rock2.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl"};
+let carModelUrl = {obj: "../Assets/Scene_1/car/toon_car.obj", mtl: "../Assets/Scene_1/car/toon_car.mtl"};
 let SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 2048;
+let floor = -2;
 
 
 
@@ -82,7 +86,7 @@ function onProgress( xhr ) {
 //     }
 // }
 
-async function loadObjMtl(objModelUrl, objectList)
+async function loadObjMtl(objModelUrl, objectList, position_x, position_z, scale)
 {
     try
     {
@@ -104,12 +108,15 @@ async function loadObjMtl(objModelUrl, objectList)
             }
         });
         
-        object.position.y = 0;
-        object.position.z = -10;
+        object.scale.set(scale, scale, scale);
+        object.position.x = position_x;
+        object.position.y = floor;
+        object.position.z = position_z;
+        
         //object.scale.set(0.05, 0.05, 0.05);
 
         objectList.push(object);
-        scene.add(object);
+        group.add(object);
     }
     catch (err){
         onError(err);
@@ -131,7 +138,7 @@ function createScene(canvas)
     scene.background = canvasTexture;
 
     camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
-    camera.position.set(0, 6, 30);
+    camera.position.set(0, 6, 20);
     scene.add(camera);
 
     orbitControls = new OrbitControls(camera, renderer.domElement);
@@ -161,7 +168,26 @@ function createScene(canvas)
     createFloor(roadMapUrl);
     createBackgroundImage(sunriseUrl);
     createGrassFloor(grassUrl);
-    loadObjMtl(treeModelUrl, objectList);
+
+    let positionZ = 10;
+    let ballTreeScale = 0.5;
+    let pineTreeScale = 0.5;
+    let rockTreeScale = 3.0;
+    for (let i=0; i<5; i++){
+        loadObjMtl(ballTreeModelUrl, objectList, 5, positionZ,ballTreeScale);
+        loadObjMtl(ballTreeModelUrl, objectList, -25, positionZ,ballTreeScale);
+        loadObjMtl(pineTreeModelUrl, objectList, -30, positionZ+5,pineTreeScale);
+        loadObjMtl(pineTreeModelUrl, objectList, 0, positionZ+5,pineTreeScale);
+        loadObjMtl(rock2ModelUrl, objectList, -10, positionZ+7,rockTreeScale);
+        loadObjMtl(rock2ModelUrl, objectList, 20, positionZ+7,rockTreeScale);
+
+        positionZ -= 10;
+    }
+
+    loadObjMtl(carModelUrl, objectList, -15.5, 0, 0.025);
+
+    group.position.x += 10;
+    scene.add(group);
     scene.add( root );
 }
 
