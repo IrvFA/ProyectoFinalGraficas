@@ -16,12 +16,12 @@ Proyecto final de la materia gráficas computacionales
 
 ## Plan de trabajo
 ### Milestones para alcanzar/entregar semana 11 (Apr 29).
-- [x] (@IrvFA) Escribir la historia, generar sucesión de eventos significativa, que quepa en un número de viñetas acordado con el profesor.
-- [x] (@IrvFA y @r7perezyera) Tener un storyboard con entre 5 y 6 cuadros.
-- [x] Definir los assets a emplear por cuadro.
-  - [x] @IrvFA Buscará y obtendrá los assets escenario y no-escenario para las escenas 1, 3, 5.
-  - [x] @r7perezyera Buscará y obtendrá los assets escenario y no-escenario para las escenas 2, 4, 6.
-- [] Validar con el profesor preguntas al momento, rumbo del trabajo.
+[x] (@IrvFA) Escribir la historia, generar sucesión de eventos significativa, que quepa en un número de viñetas acordado con el profesor.
+[x] (@IrvFA y @r7perezyera) Tener un storyboard con entre 5 y 6 cuadros.
+[x] Definir los assets a emplear por cuadro.
+  [x] @IrvFA Buscará y obtendrá los assets escenario y no-escenario para las escenas 1, 3, 5.
+  [x] @r7perezyera Buscará y obtendrá los assets escenario y no-escenario para las escenas 2, 4, 6.
+[] Validar con el profesor preguntas al momento, rumbo del trabajo.
 
 
 ---
