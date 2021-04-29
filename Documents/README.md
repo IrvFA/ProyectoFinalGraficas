@@ -8,15 +8,16 @@ Proyecto final de la materia gráficas computacionales
 # Acttividad a desarrollar: Historia
 
 ## Requerimientos funcionales
-* Movimiento de la cámara para pasar de un cuadro a otro.
+* Pase de un cuadro a otro
+* Animaciones en ciertos assets.
 
 ## Plan de trabajo
 ### Milestones para alcanzar/entregar semana 11 (Apr 29).
-* Escribir la historia, generar sucesión de eventos significativa, que quepa en un número de viñetas acordado con el profesor.
-* Tener un storyboard con entre 5 y 6 cuadros.
-* Definir los assets a emplear por cuadro.
-* Buscar y ya tener los assets escenario.
-* Buscar y ya tener los assets no-escenario.
+- [] Escribir la historia, generar sucesión de eventos significativa, que quepa en un número de viñetas acordado con el profesor.
+- [] Tener un storyboard con entre 5 y 6 cuadros.
+- [] Definir los assets a emplear por cuadro.
+- [] Buscar y ya tener los assets escenario.
+- [] Buscar y ya tener los assets no-escenario.
 
 
 ---
