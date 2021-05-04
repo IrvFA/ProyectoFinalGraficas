@@ -194,7 +194,7 @@ function createScene(canvas)
         positionZ -= 10;
     }
 
-    // loadObjMtl(carModelUrl, objectList, -15.5, 0, 0.025);
+    loadObjMtl(carModelUrl, objectList, -19, -17, 0.025);
 
     group.position.x += 10;
     scene.add(group);
