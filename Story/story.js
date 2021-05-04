@@ -14,7 +14,7 @@ let spotLight = null, ambientLight = null;
 let roadMapUrl = "../Assets/Scene_1/Road.jpg";
 let canvasUrl = "../Assets/canvas_background.jpg"
 let sunriseUrl = "../Assets/Scene_1/sunrise_background.jpg"
-let grassUrl = "../Assets/Scene_3/Grass/Vol_42_1_Base_Color.png"
+let grassUrl = {map: "../Assets/Scene_3/Grass/Vol_42_1_Base_Color.png", normalMap: "../Assets/Scene_3/Grass/Vol_42_1_Normal.png", roughness: "../Assets/Scene_3/Grass/Vol_42_1_Roughness.png"}
 let pineTreeModelUrl = {obj: "../Assets/Scene_1/pineTree.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl"};
 let ballTreeModelUrl = {obj: "../Assets/Scene_1/ballTree.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl"};
 let bushTreeModelUrl = {obj: "../Assets/Scene_1/bush.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl"};
@@ -228,12 +228,14 @@ function createFloor(floorMapUrl){
 }
 
 function createGrassFloor(grassUrl){
-    const map = new THREE.TextureLoader().load(grassUrl);
+    const map = new THREE.TextureLoader().load(grassUrl["map"]);
+    const normalMap = new THREE.TextureLoader().load(grassUrl["normalMap"]);
+    const roughnessMap = new THREE.TextureLoader().load(grassUrl["roughnessMap"])
     map.wrapS = map.wrapT = THREE.RepeatWrapping;
     map.repeat.set(2, 1);
 
     const planeGeometry = new THREE.PlaneGeometry(115, 85, 50, 50);
-    const floor = new THREE.Mesh(planeGeometry, new THREE.MeshPhongMaterial({map:map, side:THREE.DoubleSide}));
+    const floor = new THREE.Mesh(planeGeometry, new THREE.MeshPhongMaterial({map:map, side:THREE.DoubleSide, normalMap: normalMap, roughness: roughnessMap}));
 
     floor.rotation.x = -Math.PI / 2;
     floor.position.y = -2.01;
