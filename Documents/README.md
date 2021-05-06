@@ -19,7 +19,7 @@ Proyecto final de la materia gráficas computacionales
 ## Cómo se cumplirán los requerimientos y con qué elementos
 * Los assets necesarios se han obtenido en sitios sugeridos por el instructor, como _Turbosquid_, _cgtrader_, así como sitios adicionales como _pngtree_. Three.js ya provee los métodos necesarios para agregar estos a la escena, agruparlos según sea necesario, escalarlos, colocarlos en cierta posición e incluso trasladarlos.
 
-* 
+* Para modelos que cuenten con animaciones, también puede emplearse el AnimationMixer que ya provee Three.js
 
 ## Plan de trabajo
 ### Milestones para alcanzar/entregar semana 11 (Apr 29).
