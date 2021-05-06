@@ -5,14 +5,19 @@ Proyecto final de la materia gráficas computacionales
 - A01745759 Irving Fuentes Aguilera
 - A01374866 Roberto Téllez Perezyera
 
-# Acttividad a desarrollar: Historia
+# Proyecto de gráficas a desarrollar: Historia
 
-## Requerimientos funcionales
-* Pase de un cuadro a otro
-* Animaciones en ciertos assets.
+## Requerimientos funcionales del proyecto
 * Colocar objetos correspondientes (incluyendo modelos) a cada escena: escalarlos (si aplica), ponerles sus texturas, iluminar escenas.
-* Agregar animación a modelos que la tengan, o trasladar modelos que no tengan animación.
-* Pasar de una viñeta a otra
+* Agregar texto a la escena
+* Pase de un cuadro a otro - mover la cámara
+* Animación
+  * Traslación
+  * Animaciones en assets que estén "animated" y "rigged"
+
+
+## Cómo se cumplirán los requerimientos y con qué elementos
+* Los assets necesarios se han obtenido en sitios sugeridos por el instructor, como _Turbosquid_, _cgtrader_, así como sitios adicionales como _pngtree_
 
 ## Plan de trabajo
 ### Milestones para alcanzar/entregar semana 11 (Apr 29).
@@ -21,7 +26,7 @@ Proyecto final de la materia gráficas computacionales
 - [x] Definir los assets a emplear por cuadro.
   - [x] @IrvFA Buscará y obtendrá los assets escenario y no-escenario para las escenas 1, 3, 5.
   - [x] @r7perezyera Buscará y obtendrá los assets escenario y no-escenario para las escenas 2, 4, 6.
-- [ ] Validar con el profesor preguntas al momento, rumbo del trabajo.
+- [x] Validar con el profesor preguntas al momento y siguientes pasos.
 
 
 ---
