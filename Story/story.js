@@ -24,9 +24,10 @@ let carModelUrl = {obj: "../Assets/Scene_1/car/toon_car.obj", mtl: "../Assets/Sc
 let SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 2048;
 let floor = -2;
 let birdObjects = [];
-let modelUrls = ["../Assets/Scene_1/Flamingo.glb", "../Assets/Scene_1/Parrot.glb", "../Assets/Scene_1/Stork.glb"];
-let carObject = null;
-let pineTreeGroup = new THREE.Object3D, ballTreeGroup = new THREE.Object3D, rockGroup = new THREE.Object3D, carGroup = new THREE.Object3D;
+let sunObjects = [];
+let birdUrls = ["../Assets/Scene_1/Flamingo.glb", "../Assets/Scene_1/Parrot.glb", "../Assets/Scene_1/Stork.glb"];
+let sunUrl = "../Assets/Scene_1/Sun/Sun_01.gltf"
+let pineTreeGroup = new THREE.Object3D, ballTreeGroup = new THREE.Object3D, rockGroup = new THREE.Object3D, carGroup = new THREE.Object3D, sunGroup = new THREE.Object3D;
 
 
 
@@ -74,11 +75,11 @@ function onProgress( xhr ) {
     }
 }
 
-async function loadGLTF()
+async function loadBirdsGLTF()
 {
     const gltfLoader = new GLTFLoader();
 
-    const modelsPromises = modelUrls.map(url =>{
+    const modelsPromises = birdUrls.map(url =>{
         return gltfLoader.loadAsync(url);
     });
 
@@ -118,24 +119,6 @@ async function loadGLTF()
     }
 }
 
-async function loadFBX(fbxModelUrl, configuration)
-{
-    try{
-        let object = await new FBXLoader().loadAsync(fbxModelUrl);
-
-        setVectorValue(object.position, configuration, 'position', new THREE.Vector3(0,0,0));
-        setVectorValue(object.scale, configuration, 'scale', new THREE.Vector3(1, 1, 1));
-        setVectorValue(object.rotation, configuration, 'rotation', new THREE.Vector3(0,0,0));
-        
-        scene.add( object );
-
-        return object;
-    }
-    catch(err)
-    {
-        console.error( err );
-    }
-}
 
 async function loadObjMtl(objModelUrl, objectList, position_x, position_z, scale, objectGroup)
 {
@@ -173,6 +156,29 @@ async function loadObjMtl(objModelUrl, objectList, position_x, position_z, scale
     }
     catch (err){
         onError(err);
+    }
+}
+
+async function loadGLTF(gltfModelUrl, configuration, objectGroup)
+{
+    try
+    {
+        const gltfLoader = new GLTFLoader();
+
+        const result = await gltfLoader.loadAsync(gltfModelUrl);
+
+        const object = result.scene.children[0];
+
+        setVectorValue(object.position, configuration, 'position', new THREE.Vector3(0,0,0));
+        setVectorValue(object.scale, configuration, 'scale', new THREE.Vector3(1, 1, 1));
+        setVectorValue(object.rotation, configuration, 'rotation', new THREE.Vector3(0,0,0));
+
+        sunGroup.add(object);
+        group.add(sunGroup);      
+    }
+    catch(err)
+    {
+        console.error(err);
     }
 }
 
@@ -237,7 +243,9 @@ function createScene(canvas)
     }
 
     loadObjMtl(carModelUrl, objectList, -15.5, 10, 0.025, carGroup);
-    loadGLTF();
+    loadBirdsGLTF();
+    loadGLTF(sunUrl, {position: new THREE.Vector3(-10, 6, -42), scale:new THREE.Vector3(0.02, 0.02, 0.02), rotation:new THREE.Vector3(33,0,0)}, sunGroup);
+    console.log(sunGroup);
     group.position.x += 10;
     scene.add(group);
     scene.add( root );
@@ -271,6 +279,8 @@ async function animate()
             object.mixer.update(deltat*0.001);
     }
     carGroup.position.z -=0.07;
+    sunGroup.position.y +=0.04;
+    sunGroup.position.z +=0.05;
 }
 
 
