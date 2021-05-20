@@ -16,14 +16,18 @@ let canvasUrl = "../Assets/canvas_background.jpg"
 let sunriseUrl = "../Assets/Scene_1/sunrise_background.jpg"
 
 let grassUrl = "../Assets/Scene_3/Grass/Vol_42_1_Base_Color.png"
+let dirtUrl = {map: "../Assets/Scene_3/DirtPath/Vol_16_2_Base_Color.png", normalMap: "../Assets/Scene_3/DirtPath/Vol_16_2_Normal.png"}
 let pineTreeModelUrl = {obj: "../Assets/Scene_1/pineTree.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl"};
 let ballTreeModelUrl = {obj: "../Assets/Scene_1/ballTree.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl"};
 let bushTreeModelUrl = {obj: "../Assets/Scene_1/bush.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl"};
 let rock2ModelUrl = {obj: "../Assets/Scene_1/rock2.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl"};
-
+let mountainUrl = {obj: "../Assets/Scene_2/mountain_asset/lowpolymountains.obj", mtl: "../Assets/Scene_2/mountain_asset/lowpolymountains.mtl"}
 let carModelUrl = {obj: "../Assets/Scene_1/car/toon_car.obj", mtl: "../Assets/Scene_1/car/toon_car.mtl"};
 let SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 2048;
+let sunUrl = "../Assets/Scene_1/Sun/Sun_01.gltf";
+let sunGroup = new THREE.Object3D;
 let floor = -2;
+
 
 
 
@@ -37,10 +41,22 @@ function main()
     update();
 }
 
-function degrees_to_radians(degrees)
-{
-  let pi = Math.PI;
-  return degrees * (pi/180);
+function setVectorValue(vector, configuration, property, initialValues) {
+    if (configuration !== undefined) {
+        if (property in configuration) {
+            console.log("setting:", property, "with", configuration[property]);
+            vector.set(configuration[property].x, configuration[property].y, configuration[property].z);
+            return;
+        }
+    }
+
+    console.log("setting:", property, "with", initialValues);
+    vector.set(initialValues.x, initialValues.y, initialValues.z);
+}
+
+function degrees_to_radians(degrees) {
+    let pi = Math.PI;
+    return degrees * (pi / 180);
 }
 
 function onError ( err ){ console.error( err ); };
@@ -125,6 +141,30 @@ async function loadObjMtl(objModelUrl, objectList, position_x, position_z, scale
     }
 }
 
+async function loadGLTF(gltfModelUrl, configuration, objectGroup, animationFlag) {
+    try {
+        const gltfLoader = new GLTFLoader();
+
+        const result = await gltfLoader.loadAsync(gltfModelUrl);
+
+        const object = result.scene.children[0];
+
+        setVectorValue(object.position, configuration, 'position', new THREE.Vector3(0, 0, 0));
+        setVectorValue(object.scale, configuration, 'scale', new THREE.Vector3(1, 1, 1));
+        setVectorValue(object.rotation, configuration, 'rotation', new THREE.Vector3(0, 0, 0));
+
+        objectGroup.add(object);
+        group.add(objectGroup);
+
+        object.animation = false;
+        object.name = "sun";
+        if (animationFlag) animatedObjects.push(object);
+    }
+    catch (err) {
+        console.error(err);
+    }
+}
+
 
 function createScene(canvas) 
 {    
@@ -179,22 +219,33 @@ function createScene(canvas)
     // floor with grass
     createGrassFloor(grassUrl);
 
-    let positionZ = 10;
-    let ballTreeScale = 0.5;
-    let pineTreeScale = 0.5;
+    let positionZ = 0;
+    let pinePosition = -10;
+    let ballTreeScale = 0.8;
+    let pineTreeScale = 1;
     let rockTreeScale = 3.0;
-    for (let i=0; i<5; i++){
-        loadObjMtl(ballTreeModelUrl, objectList, 5, positionZ,ballTreeScale);
-        loadObjMtl(ballTreeModelUrl, objectList, -25, positionZ,ballTreeScale);
-        loadObjMtl(pineTreeModelUrl, objectList, -30, positionZ+5,pineTreeScale);
-        loadObjMtl(pineTreeModelUrl, objectList, 0, positionZ+5,pineTreeScale);
-        loadObjMtl(rock2ModelUrl, objectList, -10, positionZ+7,rockTreeScale);
-        loadObjMtl(rock2ModelUrl, objectList, 20, positionZ+7,rockTreeScale);
-
-        positionZ -= 10;
+    for (let i=0; i<10; i++){
+        loadObjMtl(ballTreeModelUrl, objectList, -35+Math.floor(Math.random()*-20), positionZ,ballTreeScale);
+        //loadObjMtl(ballTreeModelUrl, objectList,  2-Math.floor(Math.random()*10) ,positionZ,ballTreeScale);
+        loadObjMtl(pineTreeModelUrl, objectList, -32+Math.floor(Math.random()*-40), pinePosition,pineTreeScale);
+        loadObjMtl(pineTreeModelUrl, objectList,  2-Math.floor(Math.random()*10) ,pinePosition*-1,pineTreeScale);
+        positionZ -= 1;
     }
 
-    loadObjMtl(carModelUrl, objectList, -19, -17, 0.025);
+    loadObjMtl(carModelUrl, objectList, -5, -10, 0.025);
+
+    
+
+    loadObjMtl(mountainUrl,objectList, -50, -40, 2.5);
+    loadObjMtl(mountainUrl,objectList, -10, -40, 2.5);
+    loadObjMtl(mountainUrl,objectList, 30, -40, 2.5);
+    loadObjMtl(mountainUrl,objectList, 60, -40, 2.5);
+
+    loadGLTF(sunUrl, { position: new THREE.Vector3(-5, 10, -60), scale: new THREE.Vector3(0.02, 0.02, 0.02), rotation: new THREE.Vector3(33, 0, 0) }, sunGroup, true);
+
+    
+    
+
 
     group.position.x += 10;
     scene.add(group);
@@ -237,8 +288,8 @@ function createFloor(floorMapUrl){
 
 }
 
-function createGrassFloor(grassUrl){
-    const map = new THREE.TextureLoader().load(grassUrl);
+function createGrassFloor(){
+    const map = new THREE.TextureLoader().load(dirtUrl.map);
     map.wrapS = map.wrapT = THREE.RepeatWrapping;
     map.repeat.set(2, 1);
 
