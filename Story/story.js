@@ -313,6 +313,11 @@ async function animate() {
     }
     carGroup.position.z -= 0.07;
 
+    if (carGroup.position.z < -30)
+        camera.position.z -= 1;
+        if (camera.position.z< -40) 
+            camera.near = -50;
+
     for (const object of animatedObjects) {
         if (object.animation) {
             sunGroup.position.y += 0.04;
