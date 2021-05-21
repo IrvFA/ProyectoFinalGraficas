@@ -186,13 +186,24 @@ function createScene(canvas)
 
     camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
     camera.position.set(0, 6, 20);
-    // camera.add(audioListener);
-    // audioLoader.load( BIRD_SOUND_URI, function( buffer ) {
-    //     sound.setBuffer( buffer );
-    //     sound.setLoop( true );
-    //     sound.setVolume( 0.75 );
-    //     sound.play();
-    // });
+    camera.add(audioListener);
+    audioLoader.load( BIRD_SOUND_URI, function( buffer ) {
+        sound.setBuffer( buffer );
+        sound.setLoop( true );
+        sound.setVolume( 0.75 );
+        sound.play();
+    });
+
+    // TEST change camera position on created scene
+    // setTimeout(() => {
+    //     // camera.position.set(0, 6, 20);   // original pos
+    //     // x - right (+), left (-)
+    //     // y - upwards(+), downwards(-)
+    //     // z - into or out of screen
+    //     camera.position.set(0, 6, 20);
+    //     console.log('change of pos');
+    // },
+    // 3000);
     
     scene.add(camera);
 
