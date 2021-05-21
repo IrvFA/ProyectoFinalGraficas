@@ -194,18 +194,17 @@ function createScene(canvas)
         sound.play();
     });
 
+    scene.add(camera);
     // TEST change camera position on created scene
     // setTimeout(() => {
     //     // camera.position.set(0, 6, 20);   // original pos
     //     // x - right (+), left (-)
     //     // y - upwards(+), downwards(-)
     //     // z - into or out of screen
-    //     camera.position.set(0, 6, 20);
+    //     camera.position.set(0, 6, 50);
     //     console.log('change of pos');
     // },
     // 3000);
-    
-    scene.add(camera);
 
     orbitControls = new OrbitControls(camera, renderer.domElement);
         
