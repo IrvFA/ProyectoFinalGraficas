@@ -29,7 +29,7 @@ let sunGroup = new THREE.Object3D;
 let floor = -2;
 
 
-const BIRD_SOUND_URI = '../Assets/audio/birds-singing-01.ogg'
+const BIRD_SOUND_URI = '../Assets/audio/birds-singing-01.ogg';
 const audioListener = new THREE.AudioListener();
 const sound = new THREE.Audio(audioListener);
 const audioLoader = new THREE.AudioLoader();
@@ -187,12 +187,24 @@ function createScene(canvas)
     camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
     camera.position.set(0, 6, 20);
     camera.add(audioListener);
-    audioLoader.load( BIRD_SOUND_URI, function( buffer ) {
-        sound.setBuffer( buffer );
-        sound.setLoop( true );
-        sound.setVolume( 0.75 );
-        sound.play();
-    });
+    audioLoader.load( BIRD_SOUND_URI, 
+        function( buffer ) {
+            sound.setBuffer( buffer );
+            // TODO change setLoop to true
+            sound.setLoop( true );
+            sound.setVolume( 0.75 );
+            // sound.play();
+    },
+    // onProgress callback
+    function ( xhr ) {
+        console.log( 'AUDIO:', (xhr.loaded / xhr.total * 100) + '% loaded' );
+    },
+
+// onError callback
+    function ( err ) {
+        console.log( 'AUDIO ERROR - An error happened' );
+    }
+    );
 
     scene.add(camera);
     // TEST change camera position on created scene
