@@ -4,7 +4,7 @@ import { OrbitControls } from '../libs/three.js/r125/controls/OrbitControls.js';
 import { OBJLoader } from '../libs/three.js/r125/loaders/OBJLoader.js';
 import { MTLLoader } from '../libs/three.js/r125/loaders/MTLLoader.js';
 
-let renderer = null, scene = null, camera = null, root = null, group = null, orbitControls = null;
+let renderer = null, scene = null, camera = null, scene_root_2 = null, group = null, orbitControls = null;
 
 let objectList = [];
 
@@ -190,7 +190,6 @@ function createScene(canvas)
     audioLoader.load( BIRD_SOUND_URI, 
         function( buffer ) {
             sound.setBuffer( buffer );
-            // TODO change setLoop to true
             sound.setLoop( true );
             sound.setVolume( 0.75 );
             // sound.play();
@@ -220,12 +219,12 @@ function createScene(canvas)
 
     orbitControls = new OrbitControls(camera, renderer.domElement);
         
-    root = new THREE.Object3D;
+    scene_root_2 = new THREE.Object3D;
     
     spotLight = new THREE.SpotLight (0xfc6c49);
     spotLight.position.set(-6, 10, 25);
     spotLight.target.position.set(-6, 20, 20);
-    root.add(spotLight);
+    scene_root_2.add(spotLight);
 
     spotLight.castShadow = true;
     spotLight.shadow.camera.near = 1;
@@ -236,12 +235,12 @@ function createScene(canvas)
     spotLight.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
 
     ambientLight = new THREE.AmbientLight ( 0x888888 );
-    root.add(ambientLight);
+    scene_root_2.add(ambientLight);
     
     //loadGLTF();
 
     group = new THREE.Object3D;
-    root.add(group);
+    scene_root_2.add(group);
     
     
     
@@ -283,8 +282,20 @@ function createScene(canvas)
 
 
     group.position.x += 10;
-    scene.add(group);
-    scene.add( root );
+    
+    // apparently nothing happens if we comment out scene.add(group)
+    // NOTE that @ 243 there is a root.add(group)
+    //  i.e., group is part of root
+    // scene.add(group);
+    
+    // if we comment out this line, it all disappears
+    scene.add( scene_root_2 );
+    // TEST remove root group
+    setTimeout(() => {
+        scene.remove(scene_root_2);
+    },
+    3000);
+
 }
 
 function update() 
