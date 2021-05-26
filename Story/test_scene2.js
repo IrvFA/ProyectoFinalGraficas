@@ -291,10 +291,10 @@ function createScene(canvas)
     // if we comment out this line, it all disappears
     scene.add( scene_root_2 );
     // TEST remove root group
-    setTimeout(() => {
-        scene.remove(scene_root_2);
-    },
-    3000);
+    // setTimeout(() => {
+    //     scene.remove(scene_root_2);
+    // },
+    // 3000);
 
 }
 
