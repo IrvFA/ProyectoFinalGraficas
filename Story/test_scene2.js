@@ -7,6 +7,7 @@ import { MTLLoader } from '../libs/three.js/r125/loaders/MTLLoader.js';
 let renderer = null, scene = null, camera = null, scene_root_2 = null, group = null, orbitControls = null;
 
 let objectList = [];
+let animatedObjects = [];
 
 let currentTime = Date.now();
 
@@ -23,11 +24,20 @@ let bushTreeModelUrl = {obj: "../Assets/Scene_1/bush.obj", mtl: "../Assets/Scene
 let rock2ModelUrl = {obj: "../Assets/Scene_1/rock2.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl"};
 let mountainUrl = {obj: "../Assets/Scene_2/mountain_asset/lowpolymountains.obj", mtl: "../Assets/Scene_2/mountain_asset/lowpolymountains.mtl"}
 let carModelUrl = {obj: "../Assets/Scene_1/car/toon_car.obj", mtl: "../Assets/Scene_1/car/toon_car.mtl"};
+let cloverUrl = "../Assets/Scene_2/clover/clover.gltf";
+let lilypadUrl = "../Assets/Scene_2/lilyPad/LilyPad.gltf";
+let leafsUrl = {obj: "../Assets/Scene_2/leafs/clover.obj", mtl: "../Assets/Scene_2/leafs/clover.mtl"};
 let SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 2048;
 let sunUrl = "../Assets/Scene_1/Sun/Sun_01.gltf";
 let sunGroup = new THREE.Object3D;
+let leafGroup = new THREE.Object3D;
+let treeGroup = new THREE.Object3D;
+let mountainGroup = new THREE.Object3D;
+let carGroup = new THREE.Object3D;
 let floor = -2;
-
+let pointerAnimator = null;
+let animatePointer = true;
+let keyAnimations = [];
 
 const BIRD_SOUND_URI = '../Assets/audio/birds-singing-01.ogg';
 const audioListener = new THREE.AudioListener();
@@ -109,7 +119,7 @@ function onProgress( xhr ) {
 //     }
 // }
 
-async function loadObjMtl(objModelUrl, objectList, position_x, position_z, scale)
+async function loadObjMtl(objModelUrl, objectList, configuration, objGroup)
 {
     try
     {
@@ -131,15 +141,15 @@ async function loadObjMtl(objModelUrl, objectList, position_x, position_z, scale
             }
         });
         
-        object.scale.set(scale, scale, scale);
-        object.position.x = position_x;
-        object.position.y = floor;
-        object.position.z = position_z;
+        setVectorValue(object.position, configuration, 'position', new THREE.Vector3(0, 0, 0));
+        setVectorValue(object.scale, configuration, 'scale', new THREE.Vector3(1, 1, 1));
+        setVectorValue(object.rotation, configuration, 'rotation', new THREE.Vector3(0, 0, 0));
         
         //object.scale.set(0.05, 0.05, 0.05);
 
         objectList.push(object);
-        group.add(object);
+        objGroup.add(object);
+        group.add(objGroup);
     }
     catch (err){
         onError(err);
@@ -221,7 +231,7 @@ function createScene(canvas)
         
     scene_root_2 = new THREE.Object3D;
     
-    spotLight = new THREE.SpotLight (0xfc6c49);
+    spotLight = new THREE.SpotLight ("white");
     spotLight.position.set(-6, 10, 25);
     spotLight.target.position.set(-6, 20, 20);
     scene_root_2.add(spotLight);
@@ -255,31 +265,28 @@ function createScene(canvas)
 
     let positionZ = 0;
     let pinePosition = -10;
-    let ballTreeScale = 0.8;
-    let pineTreeScale = 1;
-    let rockTreeScale = 3.0;
     for (let i=0; i<10; i++){
-        loadObjMtl(ballTreeModelUrl, objectList, -35+Math.floor(Math.random()*-20), positionZ,ballTreeScale);
-        //loadObjMtl(ballTreeModelUrl, objectList,  2-Math.floor(Math.random()*10) ,positionZ,ballTreeScale);
-        loadObjMtl(pineTreeModelUrl, objectList, -32+Math.floor(Math.random()*-40), pinePosition,pineTreeScale);
-        loadObjMtl(pineTreeModelUrl, objectList,  2-Math.floor(Math.random()*10) ,pinePosition*-1,pineTreeScale);
+        loadObjMtl(ballTreeModelUrl, objectList,{ position: new THREE.Vector3(-35+Math.floor(Math.random()*-20), floor,positionZ), scale: new THREE.Vector3(0.8,0.8,0.8), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup);
+        loadObjMtl(pineTreeModelUrl, objectList,{ position: new THREE.Vector3(-32+Math.floor(Math.random()*-40), floor, pinePosition), scale: new THREE.Vector3(1, 1, 1), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup);
+        loadObjMtl(pineTreeModelUrl, objectList,{ position: new THREE.Vector3(2-Math.floor(Math.random()*10), floor, pinePosition*-1), scale: new THREE.Vector3(1, 1, 1), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup);
         positionZ -= 1;
     }
 
-    loadObjMtl(carModelUrl, objectList, -5, -10, 0.025);
+    //loadObjMtl(carModelUrl, objectList, -5, floor,-10, 0.025);
+    loadObjMtl(carModelUrl, objectList, { position: new THREE.Vector3(-5, floor,-10), scale: new THREE.Vector3(0.025, 0.025, 0.025), rotation: new THREE.Vector3(0, 0, 0) }, carGroup);
 
     
 
-    loadObjMtl(mountainUrl,objectList, -50, -40, 2.5);
-    loadObjMtl(mountainUrl,objectList, -10, -40, 2.5);
-    loadObjMtl(mountainUrl,objectList, 30, -40, 2.5);
-    loadObjMtl(mountainUrl,objectList, 60, -40, 2.5);
+
+    loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-50,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
+    loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-10,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
+    loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(30, floor,-40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
+    loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(60,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
 
     loadGLTF(sunUrl, { position: new THREE.Vector3(-5, 10, -60), scale: new THREE.Vector3(0.02, 0.02, 0.02), rotation: new THREE.Vector3(33, 0, 0) }, sunGroup, true);
 
+    loadObjMtl(leafsUrl, animatedObjects, { position: new THREE.Vector3(-10, 5, 10), scale: new THREE.Vector3(0.75, 0.75, 0.75), rotation: new THREE.Vector3(45, 45, 0) }, leafGroup);   
     
-    
-
 
     group.position.x += 10;
     
@@ -296,6 +303,8 @@ function createScene(canvas)
     // },
     // 3000);
 
+    
+
 }
 
 function update() 
@@ -303,14 +312,26 @@ function update()
     requestAnimationFrame(function() { update(); });
     
     renderer.render( scene, camera );
+    KF.update();
 
     animate();
+
 
     orbitControls.update();
 }
 
 function animate(){
+    let duration = 5000; // ms
 
+    let now = Date.now();
+    let timestamp = Date.now() * 0.0001;
+    let deltat = now - currentTime;
+    currentTime = now;
+    let fract = deltat / duration;
+    let angle = Math.PI * 2 * fract;
+
+    if (animatedObjects.length > 1)
+    animatedObjects[1].rotation.y += angle;
 }
 
 
@@ -370,6 +391,90 @@ function createBackgroundImage(textureUrl){
     floor.receiveShadow = true;
 }
 
+function range(start, end) {
+	/* generate a range : [start, start+1, ..., end-1, end] */
+	var len = end - start + 1;
+	var a = new Array(len);
+    let counter = 0.025;
+	for (let i = 0; counter < 1; i++) {
+        a[i] = counter;
+        counter+=0.025;
+    }
+	return a;
+}
+
+function playAnimations()
+{   
+    let a = range(0,1);
+
+    console.log(a);
+    // position animation
+    if (pointerAnimator)
+        pointerAnimator.stop();
+    
+    if (animatePointer)
+    {
+        pointerAnimator = new KF.KeyFrameAnimator;
+        pointerAnimator.init({ 
+            interps:
+                [
+                    { 
+                        keys: a, 
+                        values:[
+                                { x : 0, y:0, z: 0 },
+                                { x : 0., y:0.1, z: 0 },
+                                { x : 0.2, y:0.2, z: 0 },
+                                { x : .3, y:0.3, z: 0 },
+                                { x : 0.4, y:0.4, z: 0 },
+                                { x : 0.5, y:0.5, z: 0 },
+                                { x : 0.6, y:0.6, z: 0 },
+                                { x : 0.7, y:0.7, z: 0 },
+                                { x : 0.8, y:0.8, z: 0 },
+                                { x : 0.9, y:0.9, z: 0 },
+                                { x : 1, y:1, z: 0 },
+                                { x : 0.9, y:0.9, z: 0 },
+                                { x : 0.8, y:0.8, z: 0 },
+                                { x : 0.7, y:0.7, z: 0 },
+                                { x : 0.6, y:0.6, z: 0 },
+                                { x : 0.5, y:0.5, z: 0 },
+                                { x : 0.4, y:0.4, z: 0 },
+                                { x : 0.3, y:0.3, z: 0 },
+                                { x : 0.2, y:0.2, z: 0 },
+                                { x : 0.1, y:0.1, z: 0 },
+                                { x : 0, y:0, z: 0 },
+                                { x : 0.1, y:-0.1, z: 0 },
+                                { x : 0.2, y:-0.2, z: 0 },
+                                { x : 0.3, y:-0.3, z: 0 },
+                                { x : 0.4, y:-0.4, z: 0 },
+                                { x : 0.5, y:-0.5, z: 0 },
+                                { x : 0.6, y:-0.6, z: 0 },
+                                { x : 0.7, y:-0.7, z: 0 },
+                                { x : 0.8, y:-0.8, z: 0 },
+                                { x : 0.9, y:-0.9, z: 0 },
+                                { x : 1, y:-1, z: 0 },
+                                { x : 0.9, y:-0.9, z: 0 },
+                                { x : 0.8, y:-0.8, z: 0 },
+                                { x : 0.7, y:-0.7, z: 0 },
+                                { x : 0.6, y:-0.6, z: 0 },
+                                { x : 0.5, y:-0.5, z: 0 },
+                                { x : 0.4, y:-0.4, z: 0 },
+                                { x : 0.3, y:-0.3, z: 0 },
+                                { x : 0.2, y:-0.2, z: 0 },
+                                { x : 0.1, y:-0.1, z: 0 },
+                                ],
+                        target:leafGroup.position
+                    }
+                ],
+            loop: true,
+            duration:10 * 1000,
+            easing:TWEEN.Easing.Bounce.InOut,
+
+        });
+        pointerAnimator.start();
+        
+    }
+}
+
 function resize()
 {
     const canvas = document.getElementById("webglcanvas");
@@ -386,6 +491,7 @@ function resize()
 window.onload = () => {
     main()
     resize(); 
+    playAnimations();
 };
 
 window.addEventListener('resize', resize, false);
