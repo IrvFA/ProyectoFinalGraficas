@@ -4,7 +4,8 @@ import { OrbitControls } from '../libs/three.js/r125/controls/OrbitControls.js';
 import { OBJLoader } from '../libs/three.js/r125/loaders/OBJLoader.js';
 import { MTLLoader } from '../libs/three.js/r125/loaders/MTLLoader.js';
 
-let renderer = null, scene = null, camera = null, scene_root_2 = null, group = null, orbitControls = null;
+let renderer = null, scene = null, camera = null, group = null, orbitControls = null;
+let scene_root_1 = null, scene_root_2 = null, scene_root_3 = null, scene_root_4 = null, scene_root_5 = null, scene_root_6 = null;
 
 let objectList = [];
 let animatedObjects = [];
@@ -52,6 +53,15 @@ function main()
     const canvas = document.getElementById("webglcanvas");
 
     createScene(canvas);
+
+    // TEST add new scene from main
+    // atm previous scene disposes itself within its method
+    setTimeout(() => {
+        
+        createScene6(canvas)
+    },
+    7000);
+    
     
     update();
 }
@@ -289,6 +299,8 @@ function createScene(canvas)
     
 
     group.position.x += 10;
+
+    document.getElementById('storyText').innerHTML = `This is scene 2 on createScene()`;
     
     // apparently nothing happens if we comment out scene.add(group)
     // NOTE that @ 243 there is a root.add(group)
@@ -298,13 +310,28 @@ function createScene(canvas)
     // if we comment out this line, it all disappears
     scene.add( scene_root_2 );
     // TEST remove root group
-    // setTimeout(() => {
-    //     scene.remove(scene_root_2);
-    // },
-    // 3000);
+    setTimeout(() => {
+        scene.remove(scene_root_2);
+        // create_scene_6(canvas);
+        // scene.add(scene_root_6);
+        group = null;
+    },
+    7000);
+}
 
-    
+function createScene6(canvas) {
+    console.log('scene 6');
+    document.getElementById('storyText').innerHTML = `This is scene 6 on createScene6()`;
 
+    scene_root_6 = new THREE.Object3D;
+    ambientLight = new THREE.AmbientLight ( 0x888888 );
+    scene_root_6.add(ambientLight);
+
+    group = new THREE.Object3D;
+    scene_root_6.add(group);
+    createGrassFloor(grassUrl);
+
+    scene.add( scene_root_6 );
 }
 
 function update() 
@@ -315,7 +342,6 @@ function update()
     KF.update();
 
     animate();
-
 
     orbitControls.update();
 }

@@ -231,10 +231,11 @@ function createScene(canvas) {
     scene.background = canvasTexture;
 
     camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 1, 4000);
-    camera.position.set(0, 6, 20);
+    camera.position.set(0, 10, 35);
+    camera.rotation.x = -Math.PI / 12;
     scene.add(camera);
 
-    orbitControls = new OrbitControls(camera, renderer.domElement);
+    // orbitControls = new OrbitControls(camera, renderer.domElement);
 
     root = new THREE.Object3D;
 
@@ -294,7 +295,7 @@ function update() {
 
     animate();
 
-    orbitControls.update();
+    // orbitControls.update();
 }
 
 async function animate() {
