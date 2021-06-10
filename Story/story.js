@@ -5,17 +5,30 @@ import { OBJLoader } from '../libs/three.js/r125/loaders/OBJLoader.js';
 import { FBXLoader } from '../libs/three.js/r125/loaders/FBXLoader.js';
 import { MTLLoader } from '../libs/three.js/r125/loaders/MTLLoader.js';
 
-let renderer = null, scene = null, camera = null, root = null, group = null, orbitControls = null;
+
+/**
+ Complete Story Assets
+ */
+let renderer = null, scene = null, camera = null, orbitControls = null;
+let scene_root_1 = null, group_one = null, scene_root_2 = null, group_two = null;
 
 let objectList = [];
 
 let currentTime = Date.now();
 
 let spotLight = null, ambientLight = null;
+
+let raycaster = null, mouse = new THREE.Vector2(), intersected, clicked;
+let nextSceneTransition = false, currentScene= 0, lastSceneTransition = false;
+
+/*
+SCENE 1 ASSETS
+*/
 let roadMapUrl = "../Assets/Scene_1/Road.jpg";
 let canvasUrl = "../Assets/canvas_background.jpg"
 let sunriseUrl = "../Assets/Scene_1/sunrise_background.jpg"
-let grassUrl = { map: "../Assets/Scene_3/Grass/Vol_42_1_Base_Color.png", normalMap: "../Assets/Scene_3/Grass/Vol_42_1_Normal.png", roughness: "../Assets/Scene_3/Grass/Vol_42_1_Roughness.png" }
+let grassUrl = { map: "../Assets/Scene_3/Grass/Vol_42_1_Base_Color.png", normalMap: "../Assets/Scene_3/Grass/Vol_42_1_Normal.png"}
+let dirtUrl = { map: "../Assets/Scene_3/DirtPath/Vol_16_2_Base_Color.png", normalMap: "../Assets/Scene_3/DirtPath/Vol_16_2_Normal.png" }
 let pineTreeModelUrl = { obj: "../Assets/Scene_1/pineTree.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl" };
 let ballTreeModelUrl = { obj: "../Assets/Scene_1/ballTree.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl" };
 let bushTreeModelUrl = { obj: "../Assets/Scene_1/bush.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl" };
@@ -27,9 +40,17 @@ let birdObjects = [];
 let animatedObjects = [];
 let birdUrls = ["../Assets/Scene_1/Flamingo.glb", "../Assets/Scene_1/Parrot.glb", "../Assets/Scene_1/Stork.glb"];
 let sunUrl = "../Assets/Scene_1/sun.glb"
-let pineTreeGroup = new THREE.Object3D, ballTreeGroup = new THREE.Object3D, rockGroup = new THREE.Object3D, carGroup = new THREE.Object3D, sunGroup = new THREE.Object3D;
-let raycaster = null, mouse = new THREE.Vector2(), intersected, clicked;
+let pineTreeGroup = new THREE.Object3D, ballTreeGroup = new THREE.Object3D, rockGroup = new THREE.Object3D, carGroup = new THREE.Object3D, sunGroup = new THREE.Object3D
+let beeUrl = "../Assets/BEE.fbx"
 
+/* 
+SCENE 2 ASSETS
+*/
+let treeGroup = new THREE.Object3D;
+let mountainGroup = new THREE.Object3D;
+let sunGroup2 = new THREE.Object3D;
+let carGroup2 = new THREE.Object3D;
+let mountainUrl = {obj: "../Assets/Scene_2/mountain_asset/lowpolymountains.obj", mtl: "../Assets/Scene_2/mountain_asset/lowpolymountains.mtl"}
 
 
 
@@ -124,13 +145,12 @@ async function loadBirdsGLTF() {
         const results = await Promise.all(modelsPromises);
 
         results.forEach((result, index) => {
-            console.log(result);
 
             const object = result.scene.children[0];
 
             object.scale.set(0.02, 0.02, 0.02);
             object.rotation.y = 135;
-            object.position.x = index > 0 ? - Math.random() * 10 : 1;
+            object.position.x = Math.random() * -20
             object.position.y = index == 0 ? 6 : 4;
             object.position.z = 20;
 
@@ -144,7 +164,7 @@ async function loadBirdsGLTF() {
 
             birdObjects.push(object);
 
-            scene.add(object);
+            group_one.add(object)
 
         });
     }
@@ -153,45 +173,61 @@ async function loadBirdsGLTF() {
     }
 }
 
+async function loadFBX(fbxModelUrl, configuration)
+{
+    try{
+        let object = await new FBXLoader().loadAsync(fbxModelUrl);
 
-async function loadObjMtl(objModelUrl, objectList, position_x, position_z, scale, objectGroup) {
-    try {
+        setVectorValue(object.position, configuration, 'position', new THREE.Vector3(0,0,0));
+        setVectorValue(object.scale, configuration, 'scale', new THREE.Vector3(1, 1, 1));
+        setVectorValue(object.rotation, configuration, 'rotation', new THREE.Vector3(0,0,0));
+        
+        scene.add( object );
+    }
+    catch(err)
+    {
+        console.error( err );
+    }
+}
+
+async function loadObjMtl(objModelUrl, objectList, configuration, objGroup, sceneGroup)
+{
+    try
+    {
         const mtlLoader = new MTLLoader();
 
         const materials = await mtlLoader.loadAsync(objModelUrl.mtl, onProgress, onError);
 
         materials.preload();
-
+        
         const objLoader = new OBJLoader();
-
+          
         objLoader.setMaterials(materials);
         const object = await objLoader.loadAsync(objModelUrl.obj, onProgress, onError);
-
+    
         object.traverse(function (child) {
             if (child.isMesh) {
                 child.castShadow = false;
                 child.receiveShadow = false;
             }
         });
-
-        object.scale.set(scale, scale, scale);
-        object.position.x = position_x;
-        object.position.y = floor;
-        object.position.z = position_z;
-        object.rotation.y = 135;
+        
+        setVectorValue(object.position, configuration, 'position', new THREE.Vector3(0, 0, 0));
+        setVectorValue(object.scale, configuration, 'scale', new THREE.Vector3(1, 1, 1));
+        setVectorValue(object.rotation, configuration, 'rotation', new THREE.Vector3(0, 0, 0));
+        
+        //object.scale.set(0.05, 0.05, 0.05);
 
         objectList.push(object);
-        objectGroup.add(object)
-        group.add(objectGroup);
-
-
+        objGroup.add(object);
+        sceneGroup.add(objGroup);
     }
-    catch (err) {
+    catch (err){
         onError(err);
     }
 }
 
-async function loadGLTF(gltfModelUrl, configuration, objectGroup, animationFlag) {
+async function loadGLTF(gltfModelUrl, configuration, objectGroup,sceneGroup, animationFlag) {
     try {
         const gltfLoader = new GLTFLoader();
 
@@ -204,19 +240,16 @@ async function loadGLTF(gltfModelUrl, configuration, objectGroup, animationFlag)
         setVectorValue(object.rotation, configuration, 'rotation', new THREE.Vector3(0, 0, 0));
 
         objectGroup.add(object);
-        group.add(objectGroup);
+        sceneGroup.add(objectGroup);
 
         object.animation = false;
         object.name = "sun";
-        console.log(object);
         if (animationFlag) animatedObjects.push(object);
     }
     catch (err) {
         console.error(err);
     }
 }
-
-
 
 function createScene(canvas) {
     renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
@@ -233,16 +266,25 @@ function createScene(canvas) {
     camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 1, 4000);
     camera.position.set(0, 10, 35);
     camera.rotation.x = -Math.PI / 12;
+
+    loadFBX(beeUrl, {position: new THREE.Vector3(0, 5, 10), scale: new THREE.Vector3(0.01, 0.01, 0.01), rotation: new THREE.Vector3(0,0,0)});
+
     scene.add(camera);
 
-    // orbitControls = new OrbitControls(camera, renderer.domElement);
+    createScene1()
+}
 
-    root = new THREE.Object3D;
+function createScene1() {
+    
+
+    orbitControls = new OrbitControls(camera, renderer.domElement);
+
+    scene_root_1 = new THREE.Object3D;
 
     spotLight = new THREE.SpotLight(0xfc6c49);
     spotLight.position.set(-6, 0, 25);
     spotLight.target.position.set(-6, 0, 20);
-    root.add(spotLight);
+    scene_root_1.add(spotLight);
 
     spotLight.castShadow = true;
     spotLight.shadow.camera.near = 1;
@@ -253,39 +295,88 @@ function createScene(canvas) {
     spotLight.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
 
     ambientLight = new THREE.AmbientLight(0x888888);
-    root.add(ambientLight);
+    scene_root_1.add(ambientLight);
     raycaster = new THREE.Raycaster();
 
     document.addEventListener('pointermove', onDocumentPointerMove);
     document.addEventListener('pointerdown', onDocumentPointerDown);
 
-    group = new THREE.Object3D;
-    root.add(group);
+    group_one = new THREE.Object3D;
     createFloor(roadMapUrl);
     createBackgroundImage(sunriseUrl);
-    createGrassFloor(grassUrl);
+    createGrassFloor(grassUrl, group_one);
 
     let positionZ = 10;
-    let ballTreeScale = 0.5;
-    let pineTreeScale = 0.5;
-    let rockTreeScale = 3.0;
     for (let i = 0; i < 5; i++) {
-        loadObjMtl(ballTreeModelUrl, objectList, 0, positionZ, ballTreeScale, ballTreeGroup);
-        loadObjMtl(ballTreeModelUrl, objectList, -27, positionZ, ballTreeScale, ballTreeGroup);
-        loadObjMtl(pineTreeModelUrl, objectList, -22, positionZ + 5, pineTreeScale, pineTreeGroup);
-        loadObjMtl(pineTreeModelUrl, objectList, 5, positionZ + 5, pineTreeScale, pineTreeGroup);
-        loadObjMtl(rock2ModelUrl, objectList, -15, positionZ + 7, rockTreeScale, rockGroup);
-        loadObjMtl(rock2ModelUrl, objectList, -45, positionZ + 7, rockTreeScale, rockGroup);
+        
+        loadObjMtl(ballTreeModelUrl, objectList, {position: new THREE.Vector3(10,floor, positionZ), scale: new THREE.Vector3(0.5, 0.5, 0.5), rotation: new THREE.Vector3(0, 0, 0)} ,ballTreeGroup, group_one);
+        loadObjMtl(ballTreeModelUrl, objectList,{position: new THREE.Vector3(-27,floor, positionZ), scale: new THREE.Vector3(0.5, 0.5, 0.5), rotation: new THREE.Vector3(0, 0, 0)} ,ballTreeGroup, group_one);
+        loadObjMtl(pineTreeModelUrl, objectList, {position: new THREE.Vector3(-30,floor, positionZ + 5), scale: new THREE.Vector3(0.5, 0.5, 0.5), rotation: new THREE.Vector3(0, 0, 0)},pineTreeGroup, group_one);
+        loadObjMtl(pineTreeModelUrl, objectList, {position: new THREE.Vector3(10,floor, positionZ + 5), scale: new THREE.Vector3(0.5, 0.5, 0.5), rotation: new THREE.Vector3(0, 0, 0)},pineTreeGroup, group_one);
+        loadObjMtl(rock2ModelUrl, objectList, {position: new THREE.Vector3(-15,floor, positionZ + 7), scale: new THREE.Vector3(3.0, 3.0, 3.0), rotation: new THREE.Vector3(0, 0, 0)} ,rockGroup, group_one);
+        loadObjMtl(rock2ModelUrl, objectList, {position: new THREE.Vector3(45,floor, positionZ +7), scale: new THREE.Vector3(3.0, 3.0, 3.0), rotation: new THREE.Vector3(0, 0, 0)} ,rockGroup, group_one);
 
         positionZ -= 10;
     }
 
-    loadObjMtl(carModelUrl, objectList, -15.5, 10, 0.025, carGroup);
+    loadObjMtl(carModelUrl, objectList, {position: new THREE.Vector3(-15.5,floor, 10), scale: new THREE.Vector3(0.025, 0.025, 0.025), rotation: new THREE.Vector3(0, 135, 0)} ,carGroup, group_one);
     loadBirdsGLTF();
-    loadGLTF(sunUrl, { position: new THREE.Vector3(-10, -2, -42), scale: new THREE.Vector3(0.02, 0.02, 0.02), rotation: new THREE.Vector3(33, 0, 0) }, sunGroup, true);
-    console.log(animatedObjects);
-    group.position.x += 10;
-    scene.add(root);
+    loadGLTF(sunUrl, { position: new THREE.Vector3(-10, -2, -42), scale: new THREE.Vector3(0.02, 0.02, 0.02), rotation: new THREE.Vector3(33, 0, 0) }, sunGroup, group_one ,true);
+    group_one.position.x += 10;
+    scene_root_1.add(group_one);
+    scene.add(scene_root_1);
+}
+
+function createScene2() {
+    camera.position.set(0, 6, 20);
+    scene_root_2 = new THREE.Object3D;
+    spotLight = new THREE.SpotLight ("white");
+    spotLight.position.set(-6, 10, 25);
+    spotLight.target.position.set(-6, 20, 20);
+    scene_root_2.add(spotLight);
+
+    spotLight.castShadow = true;
+    spotLight.shadow.camera.near = 1;
+    spotLight.shadow.camera.far = 200;
+    spotLight.shadow.camera.fov = 45;
+    
+    spotLight.shadow.mapSize.width = SHADOW_MAP_WIDTH;
+    spotLight.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
+
+    ambientLight = new THREE.AmbientLight ( 0x888888 );
+    scene_root_2.add(ambientLight);
+    group_two = new THREE.Object3D;
+    createGrassFloor(grassUrl, group_two);
+    createDirtFloor(dirtUrl, group_two);
+    let positionZ = 0;
+    let pinePosition = -10;
+    for (let i=0; i<10; i++){
+        loadObjMtl(ballTreeModelUrl, objectList,{ position: new THREE.Vector3(-35+Math.floor(Math.random()*-20), floor,positionZ), scale: new THREE.Vector3(0.8,0.8,0.8), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup, group_two);
+        loadObjMtl(pineTreeModelUrl, objectList,{ position: new THREE.Vector3(-32+Math.floor(Math.random()*-40), floor, pinePosition), scale: new THREE.Vector3(1, 1, 1), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup, group_two);
+        loadObjMtl(pineTreeModelUrl, objectList,{ position: new THREE.Vector3(2-Math.floor(Math.random()*10), floor, pinePosition*-1), scale: new THREE.Vector3(1, 1, 1), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup, group_two);
+        positionZ -= 1;
+    }
+
+    
+
+    loadObjMtl(carModelUrl, objectList, { position: new THREE.Vector3(-5, floor,-10), scale: new THREE.Vector3(0.025, 0.025, 0.025), rotation: new THREE.Vector3(0, 0, 0) }, carGroup2, group_two);
+
+
+
+    loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-50,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup, group_two);
+    loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-10,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup, group_two);
+    loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(30, floor,-40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup, group_two);
+    loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(60,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup, group_two);
+
+    loadGLTF(sunUrl, { position: new THREE.Vector3(-5, 10, -60), scale: new THREE.Vector3(0.02, 0.02, 0.02), rotation: new THREE.Vector3(33, 0, 0) }, sunGroup2, group_two,true);
+    sunGroup.remove(sunGroup.children)
+
+    console.log(carGroup)
+    group_two.position.x += 10;
+    scene_root_2.add(group_two);
+    scene.add(scene_root_2);
+    
+    
 }
 
 function update() {
@@ -294,11 +385,21 @@ function update() {
     renderer.render(scene, camera);
 
     animate();
+    checkSceneTransition();
 
-    // orbitControls.update();
+    orbitControls.update();
 }
 
 async function animate() {
+    switch (currentScene) {
+        case 0:
+            animateScene1();
+        case 1:
+            animateScene2();
+    }
+}
+
+function animateScene1() {
     const now = Date.now();
     const deltat = now - currentTime;
     currentTime = now;
@@ -314,11 +415,6 @@ async function animate() {
     }
     carGroup.position.z -= 0.07;
 
-    if (carGroup.position.z < -30)
-        camera.position.z -= 1;
-        if (camera.position.z< -40) 
-            camera.near = -50;
-
     for (const object of animatedObjects) {
         if (object.animation) {
             sunGroup.position.y += 0.04;
@@ -333,6 +429,9 @@ async function animate() {
     }
 }
 
+function animateScene2() {
+
+}
 
 
 function createFloor(floorMapUrl) {
@@ -348,13 +447,13 @@ function createFloor(floorMapUrl) {
     floor.position.x = -12
     floor.position.z = -5
 
-    group.add(floor);
+    group_one.add(floor);
     floor.castShadow = false;
     floor.receiveShadow = true;
 
 }
 
-function createGrassFloor(grassUrl) {
+function createGrassFloor(grassUrl, group) {
     const map = new THREE.TextureLoader().load(grassUrl["map"]);
     const normalMap = new THREE.TextureLoader().load(grassUrl["normalMap"]);
     const roughnessMap = new THREE.TextureLoader().load(grassUrl["roughnessMap"])
@@ -374,11 +473,31 @@ function createGrassFloor(grassUrl) {
     floor.receiveShadow = true;
 }
 
+function createDirtFloor(dirtUrl, group) {
+    const map = new THREE.TextureLoader().load(dirtUrl["map"]);
+    const normalMap = new THREE.TextureLoader().load(dirtUrl["normalMap"]);
+    const roughnessMap = new THREE.TextureLoader().load(dirtUrl["roughnessMap"])
+    // map.wrapS = map.wrapT = THREE.RepeatWrapping;
+    // map.repeat.set(2, 1);
+
+    const planeGeometry = new THREE.PlaneGeometry(50, 85, 50, 50);
+    const floor = new THREE.Mesh(planeGeometry, new THREE.MeshPhongMaterial({ map: map, side: THREE.DoubleSide, normalMap: normalMap, roughness: roughnessMap }));
+
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = -2.0;
+    floor.position.x = 0;
+    floor.position.z = -5;
+
+    group.add(floor);
+    floor.castShadow = false;
+    floor.receiveShadow = true;
+}
+
 function createBackgroundImage(textureUrl) {
     const map = new THREE.TextureLoader().load(textureUrl);
     map.wrapS = map.wrapT = THREE.RepeatWrapping;
 
-    const planeGeometry = new THREE.PlaneGeometry(115, 25, 50, 50);
+    const planeGeometry = new THREE.PlaneGeometry(160, 50, 50, 50);
     const floor = new THREE.Mesh(planeGeometry, new THREE.MeshPhongMaterial({ map: map, side: THREE.DoubleSide }));
 
     floor.rotation.x = degrees_to_radians(360);
@@ -387,7 +506,7 @@ function createBackgroundImage(textureUrl) {
     floor.position.x = 0;
     floor.position.z = -42.5;
 
-    group.add(floor);
+    group_one.add(floor);
     floor.castShadow = false;
     floor.receiveShadow = true;
 }
@@ -396,7 +515,7 @@ function resize() {
     const canvas = document.getElementById("webglcanvas");
 
     canvas.width = document.body.clientWidth;
-    canvas.height = document.body.clientHeight;
+    canvas.height = document.body.clientHeight * 0.95;
 
     camera.aspect = canvas.width / canvas.height;
 
@@ -404,10 +523,39 @@ function resize() {
     renderer.setSize(canvas.width, canvas.height);
 }
 
+function checkSceneTransition() {
+if (nextSceneTransition){
+    switch (currentScene){
+        case 1:
+            camera.position.z -= 1;
+            if (camera.position.z < -30){
+                scene.remove(scene_root_1);
+                nextSceneTransition = false;
+                createScene2();
+            }
+            break;
+                
+    }
+}
+}
+
+
+function initControls() {
+    document.querySelector("#last-scene").addEventListener('click', () => { 
+        currentScene--;
+    } );
+    document.querySelector("#next-scene").addEventListener('click', () => { 
+        nextSceneTransition = true;
+        currentScene++;
+    } );
+
+} 
+
 window.onload = () => {
     main()
     resize();
-    
+    initControls();
 };
+
 
 window.addEventListener('resize', resize, false);
