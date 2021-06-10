@@ -201,16 +201,6 @@ function createScene4(canvas)
     });
 
     scene.add(camera);
-    // TEST change camera position on created scene
-    // setTimeout(() => {
-    //     // camera.position.set(0, 6, 20);   // original pos
-    //     // x - right (+), left (-)
-    //     // y - upwards(+), downwards(-)
-    //     // z - into or out of screen
-    //     camera.position.set(0, 6, 50);
-    //     console.log('change of pos');
-    // },
-    // 3000);
 
     
     orbitControls = new OrbitControls(camera, renderer.domElement);
@@ -227,45 +217,42 @@ function createScene4(canvas)
     spotLight.shadow.camera.near = 1;
     spotLight.shadow.camera.far = 200;
     spotLight.shadow.camera.fov = 45;
-    
     spotLight.shadow.mapSize.width = SHADOW_MAP_WIDTH;
     spotLight.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
 
     ambientLight = new THREE.AmbientLight ( 0x888888 );
     scene_root_4.add(ambientLight);
     
-
-    
+    // object groups for hierarchy and management in master scene file
     group_four = new THREE.Object3D;
     floor_group_four = new THREE.Object3D;
     scene_root_4.add(group_four);
     scene_root_4.add(floor_group_four)
     
-    
-    
+    // background image
+    createBackgroundImage(waterUrl);
 
-
-    // floor with grass
+    // create floor assets and add rotation to hill subgroup
     createDirtFloor(dirtUrl);
     createGrassFloor(grassUrl, floor_group_four);
     createLakeSurface(waterUrl);
-
     floor_group_four.rotation.z = degrees_to_radians(-5);
 
 
-    loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-50,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
-    loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-10,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
-    loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(30, floor,-40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
-    loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(60,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
-    mountainGroup.position.x = -35;
-    mountainGroup.position.y = 5;
-    mountainGroup.position.z = 5;
+    // adding mountains
+    // loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-50,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
+    // loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-10,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
+    // loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(30, floor,-40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
+    // loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(60,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
+    // mountainGroup.position.x = -35;
+    // mountainGroup.position.z = 5;
+    // mountainGroup.rotation.y = degrees_to_radians(-10);
 
+    // loading and adding sun
+    loadGLTF(sunUrl, { position: new THREE.Vector3(35, 25, -60), scale: new THREE.Vector3(0.02, 0.02, 0.02), rotation: new THREE.Vector3(33, 0, 0) }, sunGroup, true);
 
-    mountainGroup.rotation.y = degrees_to_radians(-10);
-
-    loadGLTF(sunUrl, { position: new THREE.Vector3(-5, 25, -60), scale: new THREE.Vector3(0.02, 0.02, 0.02), rotation: new THREE.Vector3(33, 0, 0) }, sunGroup, true);
-
+    // loading and adding trees
+    loadObjMtl(pineTreeModelUrl, objectList,{ position: new THREE.Vector3(5, 5, 5), scale: new THREE.Vector3(1, 1, 1), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup);
     
 
     group_four.position.x += 10;
@@ -277,12 +264,7 @@ function createScene4(canvas)
     
     
     
-    // apparently nothing happens if we comment out scene.add(group)
-    // NOTE that @ 243 there is a root.add(group)
-    //  i.e., group is part of root
-    // scene.add(group);
-    
-    // if we comment out this line, it all disappears
+    // add root group -which contains all scene assets- to the scene
     scene.add( scene_root_4 );
 }
 
@@ -314,6 +296,22 @@ function animate(){
     animatedObjects[1].rotation.y += angle;
 }
 
+function createBackgroundImage(textureUrl){
+    const map = new THREE.TextureLoader().load(textureUrl);
+    map.wrapS = map.wrapT = THREE.RepeatWrapping;
+
+    const planeGeometry = new THREE.PlaneGeometry(115, 25, 50, 50);
+    const background = new THREE.Mesh(planeGeometry, new THREE.MeshPhongMaterial({map:map, side:THREE.DoubleSide}));
+
+    background.rotation.z = degrees_to_radians(180);
+    background.position.x =0;
+    background.position.y = 9.9;
+    background.position.z = -42.5;
+    
+    group_four.add( background );
+    background.castShadow = false;
+    background.receiveShadow = true;
+}
 
 function createLakeSurface() {
   const map = new THREE.TextureLoader().load(waterUrl);
@@ -326,7 +324,7 @@ function createLakeSurface() {
 
 lakeSurface.rotation.x = degrees_to_radians(-90);
 lakeSurface.position.x = 67;
-lakeSurface.position.y = -1.95;
+lakeSurface.position.y = -4;
 lakeSurface.position.z = -20;
   
   group_four.add( lakeSurface );
