@@ -300,11 +300,10 @@ function createBackgroundImage(textureUrl){
     const map = new THREE.TextureLoader().load(textureUrl);
     map.wrapS = map.wrapT = THREE.RepeatWrapping;
 
-    const planeGeometry = new THREE.PlaneGeometry(115, 25, 50, 50);
+    const planeGeometry = new THREE.PlaneGeometry(145, 25, 50, 50);
     const background = new THREE.Mesh(planeGeometry, new THREE.MeshPhongMaterial({map:map, side:THREE.DoubleSide}));
 
     background.rotation.z = degrees_to_radians(180);
-    background.position.x =0;
     background.position.y = 9.9;
     background.position.z = -42.5;
     
