@@ -251,9 +251,40 @@ function createScene4(canvas)
     // loading and adding sun
     loadGLTF(sunUrl, { position: new THREE.Vector3(35, 25, -60), scale: new THREE.Vector3(0.02, 0.02, 0.02), rotation: new THREE.Vector3(33, 0, 0) }, sunGroup, true);
 
+
     // loading and adding trees
-    loadObjMtl(pineTreeModelUrl, objectList,{ position: new THREE.Vector3(5, 5, 5), scale: new THREE.Vector3(1, 1, 1), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup);
-    
+    // front row
+    let x_displacement = 0;
+    let y_displacement = -4;
+    const PINE_Z_POS = 2;
+    for (let i = 0; i < 6; i++) {
+        loadObjMtl(pineTreeModelUrl, objectList,{ position: new THREE.Vector3(x_displacement, y_displacement, PINE_Z_POS), scale: new THREE.Vector3(1, 1, 1), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup);    
+        x_displacement -= 9;
+        y_displacement += 1;
+    }
+
+    // middle row
+    x_displacement = 10;
+    y_displacement = -4;
+    const BALLTREE_Z_POS = -10;
+    for (let i = 0; i < 6; i++) {
+        loadObjMtl(ballTreeModelUrl, objectList,{ position: new THREE.Vector3(x_displacement, y_displacement, BALLTREE_Z_POS), scale: new THREE.Vector3(1, 1, 1), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup);    
+        x_displacement -= 12;
+        y_displacement += 1;
+    }
+
+    // back row with scaled pines
+    x_displacement = 1;
+    y_displacement = -4;
+    const BIGPINE_Z_POS = -20;
+    for (let i = 0; i < 6; i++) {
+        loadObjMtl(pineTreeModelUrl, objectList,{ position: new THREE.Vector3(x_displacement, y_displacement, BIGPINE_Z_POS), scale: new THREE.Vector3(1.75, 1.75, 1.75), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup);    
+        x_displacement -= 12;
+        y_displacement += 1;
+    }
+
+
+
 
     group_four.position.x += 10;
 
