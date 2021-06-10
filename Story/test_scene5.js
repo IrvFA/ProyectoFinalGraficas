@@ -41,10 +41,12 @@ let carModelUrl = {obj: "../Assets/Scene_1/car/toon_car.obj", mtl: "../Assets/Sc
 let lilypadUrl = "../Assets/Scene_2/lilyPad/LilyPad.gltf";
 
 let sunUrl = "../Assets/Scene_1/Sun/Sun_01.gltf";
+let cliffUrl = "../Assets/Scene_5/mountainLandscape/model.gltf";
 
 let SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 2048;
 
 let sunGroup = new THREE.Object3D;
+let cliffGroup = new THREE.Object3D;
 let leafGroup = new THREE.Object3D;
 let treeGroup = new THREE.Object3D;
 let mountainGroup = new THREE.Object3D;
@@ -64,7 +66,7 @@ const audioListener = new THREE.AudioListener();
 const sound = new THREE.Audio(audioListener);
 const audioLoader = new THREE.AudioLoader();
 
-const text_scene_3 = `Father and son kept walking through the forest trail, up a small mountain, to where they could camp for the night.`;
+const text_scene_3 = `This is scene 5 text`;
 
 
 function main() 
@@ -272,7 +274,12 @@ function createScene5(canvas)
     // loading and adding trees
 
     // load and add rock that is mountain top
-    loadObjMtl(rock2ModelUrl, objectList, {position: new THREE.Vector3(85,0,-13), scale: new THREE.Vector3(17.0, 4.0, 8.0), rotation: new THREE.Vector3(0, 0, 0)} ,rockGroup5, group_five);
+    loadObjMtl(rock2ModelUrl, objectList, {position: new THREE.Vector3(111,0,-13), scale: new THREE.Vector3(22.0, 4.0, 8.0), rotation: new THREE.Vector3(0, 0, 0)} ,rockGroup5, group_five);
+
+    
+    
+    // load cilff/mountains for landscape
+    loadGLTF(cliffUrl, { position: new THREE.Vector3(-7, -20, -42), scale: new THREE.Vector3(10.0, 7.0, 7.0), rotation: new THREE.Vector3(0, 0, 0) }, cliffGroup, false);
 
 
 
@@ -323,7 +330,7 @@ function createBackgroundImage(textureUrl){
     const map = new THREE.TextureLoader().load(textureUrl);
     map.wrapS = map.wrapT = THREE.RepeatWrapping;
 
-    const planeGeometry = new THREE.PlaneGeometry(145, 25, 50, 50);
+    const planeGeometry = new THREE.PlaneGeometry(150, 75, 50, 50);
     const background = new THREE.Mesh(planeGeometry, new THREE.MeshPhongMaterial({map:map, side:THREE.DoubleSide}));
 
     background.position.y = 9.8;
