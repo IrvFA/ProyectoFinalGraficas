@@ -27,6 +27,14 @@ let nextSceneTransition = false, currentScene= 0, lastSceneTransition = false;
 
 let beeGroup = new THREE.Object3D;
 
+/**
+ * AUDIO ASSETS
+ */
+
+ const audioListener = new THREE.AudioListener();
+ const sound = new THREE.Audio(audioListener);
+ const audioLoader = new THREE.AudioLoader();
+
 /*
 SCENE 1 ASSETS
 */
@@ -68,13 +76,13 @@ SCENE 3 ASSETS
 */
 
 // master/root groups/objects
-let objectList3 = [];
 let animatedObjects3 = []
 let waterUrl = "../Assets/Scene_3/waterTexture.png";
 let rockGroup3= new THREE.Object3D;
 let treeGroup3 = new THREE.Object3D;
 let sunGroup3 = new THREE.Object3D;
 let charGroup3 = new THREE.Object3D;
+let mountainGroup2 = new THREE.Object3D;
 let lake = null;
 let lakeAnimator = null;
 let animateLake = false;
@@ -82,6 +90,22 @@ let characterThrowingUrl = "../Assets/Scene_3/Throwing.fbx"
 const text_scene_3 = `They soon reached a peaceful lake. They were the only ones there.
 Time flew. The lake and the forest blended as one.
 It was just them and the lake.`;
+
+
+/**
+ * Scene 4 Assets
+ */
+
+// master/root groups/objects
+let animatedObjects4 = []
+const TRAIL_FOOTSTEPS_SOUND_URI = '../Assets/audio/trail-footsteps-01.ogg';
+let scene_root_4 = null;
+// floor group will contain the floor groups, which are going to be rotated
+let floor_group_four = null;
+let group_four = null;
+let sunGroup4 = new THREE.Object3D;
+let treeGroup4 = new THREE.Object3D;
+let characterWalkingUrl = "../Assets/Scene_4/Walking.fbx";
 
 
 function main() {
@@ -257,7 +281,7 @@ async function loadCharFBX(fbxModelUrl, configuration, animationArray, objGroup,
         object.action.play();
         animationArray.push(object);
         objGroup.add(object);
-        sceneGroup.add(objGroup);
+        //sceneGroup.add(objGroup);
     }
     catch(err)
     {
@@ -343,6 +367,9 @@ function createScene(canvas) {
     camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 1, 4000);
     camera.position.set(0, 10, 35);
     camera.rotation.x = -Math.PI / 12;
+
+    camera.add(audioListener);
+
     raycaster = new THREE.Raycaster();
 
     orbitControls = new OrbitControls(camera, renderer.domElement);
@@ -354,7 +381,10 @@ function createScene(canvas) {
 
     scene.add(camera);
 
-    createScene1()
+    createScene1();
+    createScene2();
+    createScene3();
+    createScene4();
 }
 
 function createScene1() {
@@ -383,7 +413,7 @@ function createScene1() {
 
     group_one = new THREE.Object3D;
     createFloor(roadMapUrl);
-    createBackgroundImage(sunriseUrl);
+    createBackgroundImage(sunriseUrl, group_one);
     createGrassFloor(grassUrl, group_one);
 
     let positionZ = 10;
@@ -439,7 +469,8 @@ function createScene2() {
 
     
     loadObjMtl(carModelUrl, objectList, { position: new THREE.Vector3(0, floor, 20), scale: new THREE.Vector3(0.025, 0.025, 0.025), rotation: new THREE.Vector3(0, -90, 0) }, carGroup2, group_two);
-    charLoaded = true;
+    loadCharFBX(characterUrl, {position : new THREE.Vector3(0, floor, 15), scale: new THREE.Vector3(0.03, 0.03, 0.03), rotation: new THREE.Vector3(0,0,0)}, animatedObjects2, charGroup, group_two);
+
     console.log(charGroup);
     carGroup2.animation = true;
     carGroup2.position.x = 10;
@@ -457,14 +488,13 @@ function createScene2() {
     console.log(carGroup)
     group_two.position.x += 10;
     scene_root_2.add(group_two);
-    scene.add(scene_root_2);
+    //scene.add(scene_root_2);
     
     
 }
 
 function createScene3() {
-    camera.position.set(0, 6, 35);
-    document.getElementById('storyText').innerHTML = text_scene_3;  
+    camera.position.set(0, 6, 35); 
     scene_root_3 = new THREE.Object3D;
     
     // add lighting to scene
@@ -510,13 +540,13 @@ function createScene3() {
         positionZ+=4;
     }
 
-    loadCharFBX(characterThrowingUrl, {position: new THREE.Vector3(-15, floor, 10), scale: new THREE.Vector3(0.03, 0.03, 0.03), rotation:  new THREE.Vector3(0,90,0)}, animatedObjects3, charGroup3, group_three)
-
+    loadCharFBX(characterThrowingUrl, {position: new THREE.Vector3(0, floor, 10), scale: new THREE.Vector3(0.03, 0.03, 0.03), rotation:  new THREE.Vector3(0,90,0)}, animatedObjects3, charGroup3, group_three)
+    scene_root_3.add(charGroup3);
     console.log(charGroup3);
-    loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-50,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup, group_three);
-    loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-10,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup, group_three);
-    loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(30, floor,-40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup, group_three);
-    loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(60,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup, group_three);
+    loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-50,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup2, group_three);
+    loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-10,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup2, group_three);
+    loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(30, floor,-40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup2, group_three);
+    loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(60,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup2, group_three);
 
     loadGLTF(sunUrl, { position: new THREE.Vector3(-5, 15, -60), scale: new THREE.Vector3(0.02, 0.02, 0.02), rotation: new THREE.Vector3(33, 0, 0) }, sunGroup3, group_three ,true);
 
@@ -534,7 +564,114 @@ function createScene3() {
     // scene.add(group);
     
     // if we comment out this line, it all disappears
-    scene.add( scene_root_3 );
+}
+
+function createScene4() {
+    audioLoader.load( TRAIL_FOOTSTEPS_SOUND_URI, 
+        function( buffer ) {
+            sound.setBuffer( buffer );
+            sound.setLoop( true );
+            sound.setVolume( 0.75 );
+            // sound.play();
+    },
+    // onProgress callback
+    function ( xhr ) {
+        console.log( 'AUDIO:', (xhr.loaded / xhr.total * 100) + '% loaded' );
+    },
+
+    // onError callback
+    function ( err ) {
+        console.log( 'AUDIO ERROR - An error happened' );
+    });
+
+    // create root object to keep all objects of this scene
+    scene_root_4 = new THREE.Object3D;
+    
+    // add lighting to scene
+    spotLight = new THREE.SpotLight ("white");
+    spotLight.position.set(-6, 10, 35);
+    spotLight.target.position.set(-6, 20, 20);
+    scene_root_4.add(spotLight);
+    spotLight.castShadow = true;
+    spotLight.shadow.camera.near = 1;
+    spotLight.shadow.camera.far = 200;
+    spotLight.shadow.camera.fov = 45;
+    spotLight.shadow.mapSize.width = SHADOW_MAP_WIDTH;
+    spotLight.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
+
+    ambientLight = new THREE.AmbientLight ( 0x888888 );
+    scene_root_4.add(ambientLight);
+    
+    // object groups for hierarchy and management in master scene file
+    group_four = new THREE.Object3D;
+    floor_group_four = new THREE.Object3D;
+    scene_root_4.add(group_four);
+    scene_root_4.add(floor_group_four)
+    
+    // background image
+    createBackgroundImage(waterUrl, group_four);
+
+    // create floor assets and add rotation to hill subgroup
+    createDirtFloor(dirtUrl, group_four);
+    createGrassFloor(grassUrl, floor_group_four);
+    //createLakeSurface(waterUrl, group_four);
+    floor_group_four.rotation.z = degrees_to_radians(-5);
+
+
+    
+
+    // loading and adding sun
+    loadGLTF(sunUrl, { position: new THREE.Vector3(35, 25, -60), scale: new THREE.Vector3(0.02, 0.02, 0.02), rotation: new THREE.Vector3(33, 0, 0) }, sunGroup4, group_four ,true);
+
+
+    // loading and adding trees
+    // front row
+    let x_displacement = 0;
+    let y_displacement = -4;
+    const PINE_Z_POS = 2;
+    for (let i = 0; i < 6; i++) {
+        loadObjMtl(pineTreeModelUrl, objectList,{ position: new THREE.Vector3(x_displacement, y_displacement, PINE_Z_POS), scale: new THREE.Vector3(1, 1, 1), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup4, group_four);    
+        x_displacement -= 9;
+        y_displacement += 1;
+    }
+
+    // middle row
+    x_displacement = 10;
+    y_displacement = -4;
+    const BALLTREE_Z_POS = -10;
+    for (let i = 0; i < 6; i++) {
+        loadObjMtl(ballTreeModelUrl, objectList,{ position: new THREE.Vector3(x_displacement, y_displacement, BALLTREE_Z_POS), scale: new THREE.Vector3(1, 1, 1), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup4, group_four);    
+        x_displacement -= 12;
+        y_displacement += 1;
+    }
+
+    // back row with scaled pines
+    x_displacement = 1;
+    y_displacement = -4;
+    const BIGPINE_Z_POS = -20;
+    for (let i = 0; i < 6; i++) {
+        loadObjMtl(pineTreeModelUrl, objectList,{ position: new THREE.Vector3(x_displacement, y_displacement, BIGPINE_Z_POS), scale: new THREE.Vector3(1.75, 1.75, 1.75), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup4, group_four);    
+        x_displacement -= 12;
+        y_displacement += 1;
+    }
+
+    loadCharFBX(characterWalkingUrl, {position: new THREE.Vector3(0, floor, 10), scale: new THREE.Vector3(0.03, 0.03, 0.03), rotation:  new THREE.Vector3(0,90,0)}, animatedObjects3, charGroup3, group_three)
+
+
+
+
+
+    group_four.position.x += 10;
+
+    setTimeout(() => {
+      document.getElementById('storyText').innerHTML = text_scene_3;  
+    },
+    3000);
+    
+}
+
+function createTextScene3() {
+    document.getElementById('storyText').innerHTML = text_scene_3; 
 }
 
 function update() {
@@ -560,6 +697,8 @@ async function animate() {
         case 2:
             animateScene3();
             break;
+        case 3:
+            animateScene4();
     }
 }
 
@@ -604,10 +743,10 @@ function animateScene2() {
     }
     if(carGroup2.position.x< -5){
         carGroup2.animation = false;
-        if(charLoaded){
-            loadCharFBX(characterUrl, {position : new THREE.Vector3(-10, floor, 15), scale: new THREE.Vector3(0.03, 0.03, 0.03), rotation: new THREE.Vector3(0,0,0)}, animatedObjects2, charGroup, group_two);
-            charLoaded = false;
-        }
+    if(charLoaded== true){
+        scene_root_2.add(charGroup);
+        charLoaded = false;
+    }
     }
 
     for (const object of animatedObjects2) {
@@ -625,7 +764,16 @@ function animateScene3() {
         if (object.mixer)
             object.mixer.update(deltat * 0.001);
     }
-    KF.update();
+}
+
+function animateScene4() {
+    const now = Date.now();
+    const deltat = now - currentTime;
+    currentTime = now;
+    for (const object of animatedObjects4) {
+        if (object.mixer)
+            object.mixer.update(deltat * 0.001);
+    }
 }
 
 function createLakeSurface(waterUrl, group) {
@@ -705,7 +853,7 @@ function createDirtFloor(dirtUrl, group) {
     floor.receiveShadow = true;
 }
 
-function createBackgroundImage(textureUrl) {
+function createBackgroundImage(textureUrl, sceneGroup) {
     const map = new THREE.TextureLoader().load(textureUrl);
     map.wrapS = map.wrapT = THREE.RepeatWrapping;
 
@@ -718,7 +866,7 @@ function createBackgroundImage(textureUrl) {
     floor.position.x = 0;
     floor.position.z = -42.5;
 
-    group_one.add(floor);
+    sceneGroup.add(floor);
     floor.castShadow = false;
     floor.receiveShadow = true;
 }
@@ -745,6 +893,7 @@ if (lastSceneTransition){
                     scene.remove(scene_root_2);
                     lastSceneTransition = false;
                     beeGroup.position.z = 10;
+                    carGroup.position.set(0,floor+2, 10);
                     camera.position.set(0, 6, 35);
                     scene.add(scene_root_1)
                 }
@@ -753,22 +902,24 @@ if (lastSceneTransition){
                 beeGroup.position.z -= 1.5;
                 camera.position.z -= 1;
                 if (camera.position.z < -30){
-                    scene.remove(scene_root_1);
-                    nextSceneTransition = false;
+                    scene.remove(scene_root_3);
+                    lastSceneTransition = false;
                     beeGroup.position.z = 10;
-                    createScene2();
+                    camera.position.set(0, 6, 35);
+                    scene.add(scene_root_2)
                 }
                 break;
             case 2:
                 beeGroup.position.z -= 1.5;
                 camera.position.z -= 1;
                 if (camera.position.z < -30){
-                    scene.remove(scene_root_2);
-                    nextSceneTransition = false;
+                    scene.remove(scene_root_4);
+                    lastSceneTransition = false;
                     beeGroup.position.z = 10;
-                    createScene3(); 
-                    console.log(lake);
+                    camera.position.set(0, 6, 35);
+                    scene.add(scene_root_3)
                 }
+                break;
     
                     
         }
@@ -782,7 +933,9 @@ if (nextSceneTransition){
                 scene.remove(scene_root_1);
                 nextSceneTransition = false;
                 beeGroup.position.z = 10;
-                createScene2();
+                camera.position.set(0, 6, 35);
+                charLoaded = true;
+                scene.add(scene_root_2);
             }
             break;
         case 2:
@@ -792,9 +945,22 @@ if (nextSceneTransition){
                 scene.remove(scene_root_2);
                 nextSceneTransition = false;
                 beeGroup.position.z = 10;
-                createScene3(); 
-                console.log(lake);
+                camera.position.set(0, 6, 35);
+                scene.add(scene_root_3);
+                createTextScene3(); 
             }
+            break;
+        case 3:
+            beeGroup.position.z -= 1.5;
+            camera.position.z -= 1;
+            if (camera.position.z < -30){
+                scene.remove(scene_root_3);
+                nextSceneTransition = false;
+                beeGroup.position.z = 10;
+                camera.position.set(0, 6, 35);
+                scene.add(scene_root_4);
+            }
+            break;
 
                 
     }
