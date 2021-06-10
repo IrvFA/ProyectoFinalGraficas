@@ -77,7 +77,7 @@ let characterUrl = "../Assets/Scene_2/characterLooking.fbx"
 const BIRD_SOUND_URI = '../Assets/audio/birds-singing-01.ogg';
 let charGroup = new THREE.Object3D;
 let charLoaded = false;
-const text_scene_2 = `After a short three hour drive they arrived to the forest. You could really see the excitement in James' face as 
+const text_scene_2 = `After a three hour drive they arrived to the forest. You could really see the excitement in James' face as 
 he jumped out of the car and stared in awe at the pines and trees seeming to touch the sky.`;
 
 
@@ -104,7 +104,7 @@ It was just them and the lake.`;
 
 
 /**
- * Scene 4 Assets
+ SCENE 4 ASSETS
  */
 
 // master/root groups/objects
@@ -120,10 +120,11 @@ let treeGroup4 = new THREE.Object3D;
 let wolfGroup4 = new THREE.Object3D;
 let characterWalkingUrl = "../Assets/Scene_4/Walking.fbx";
 let wolfUrl = "../Assets/Scene_4/Wolf.glb"
-const text_scene_4 = `Father and son walked through the woods up a mountain where they would camp out for the night.`;
+const text_scene_4 = `Father and son walked through the woods up a mountain where they would camp out for the night.
+Guided by nothing but the spirit of adventure`;
 
 /**
- * Scene 5 Assets
+ SCENE 5 ASSETS
  */
 
 // master/root groups/objects
@@ -142,8 +143,9 @@ let cliffUrl = "../Assets/Scene_5/mountainLandscape/model.gltf";
 let sunGroup5 = new THREE.Object3D;
 let cliffGroup = new THREE.Object3D;
 let rockGroup5 = new THREE.Object3D;
+
 /**
- * Scene 6 Assets
+ * SCENE 6 ASSETS
  */
 const CAMPFIRE_SOUND_URI = '../Assets/audio/campfire-01.ogg'
 const text_scene_6 = `As they stared into the night sky, it felt as if each star became alive while watching them. 
@@ -520,6 +522,11 @@ function createScene1() {
     group_one.position.x += 10;
     scene_root_1.add(group_one);
     scene.add(scene_root_1);
+
+    setTimeout(() => {
+        document.getElementById('storyText').innerHTML = text_scene_1;  
+      },
+      2000);
 }
 
 function createScene2() {
@@ -573,9 +580,7 @@ function createScene2() {
     console.log(carGroup)
     group_two.position.x += 10;
     scene_root_2.add(group_two);
-    //scene.add(scene_root_2);
-    
-    
+    //scene.add(scene_root_2);   
 }
 
 function createScene3() {
@@ -597,18 +602,13 @@ function createScene3() {
 
     ambientLight = new THREE.AmbientLight ( 0x888888 );
     scene_root_3.add(ambientLight);
-    
-    //loadGLTF();
 
     
     group_three = new THREE.Object3D;
     scene_root_3.add(group_three);
     
-    
-    
 
-
-    // floor with grass
+    // create floor surfaces
     createGrassFloor(grassUrl, group_three);
     createLakeSurface(waterUrl, group_three);
 
@@ -639,16 +639,6 @@ function createScene3() {
 
     group_three.position.x += 10;
 
-    
-    
-    
-    
-    // apparently nothing happens if we comment out scene.add(group)
-    // NOTE that @ 243 there is a root.add(group)
-    //  i.e., group is part of root
-    // scene.add(group);
-    
-    // if we comment out this line, it all disappears
 }
 
 function createScene4() {
@@ -743,17 +733,13 @@ function createScene4() {
     loadCharFBX(characterWalkingUrl, {position: new THREE.Vector3(0, floor, 10), scale: new THREE.Vector3(0.03, 0.03, 0.03), rotation:  new THREE.Vector3(0,-90,0)}, animatedObjects4, charGroup4, group_four)
     scene_root_4.add(charGroup4);
 
-
-
-
     group_four.position.x += 10;
 
     // delayed text creation
-    setTimeout(() => {
-      document.getElementById('storyText').innerHTML = text_scene_4;  
-    },
-    2000);
-    
+    // setTimeout(() => {
+    //   document.getElementById('storyText').innerHTML = text_scene_4;  
+    // },
+    // 2000);    
 }
 
 
@@ -843,10 +829,10 @@ function createScene5() {
 
     group_five.position.x += 10;
 
-    setTimeout(() => {
-      document.getElementById('storyText').innerHTML = text_scene_3;  
-    },
-    3000);
+    // setTimeout(() => {
+    //   document.getElementById('storyText').innerHTML = text_scene_3;  
+    // },
+    // 3000);
     scene_root_5.add(group_five);
     scene_root_5.add(floor_group_five)
 }
@@ -910,10 +896,10 @@ function createScene6() {
 
     group_six.position.x += 10;
 
-    setTimeout(() => {
-      document.getElementById('storyText').innerHTML = text_scene_6;  
-    },
-    3000);
+    // setTimeout(() => {
+    //   document.getElementById('storyText').innerHTML = text_scene_6;  
+    // },
+    // 3000);
     
 }
 
@@ -921,7 +907,7 @@ function createTextScene1() {
     setTimeout(() => {
         document.getElementById('storyText').innerHTML = text_scene_1;     
     },
-    2000);
+    3000);
 }
 
 function createTextScene2() {
@@ -1251,6 +1237,7 @@ if (nextSceneTransition){
                 camera.position.set(0, 6, 35);
                 charLoaded = true;
                 scene.add(scene_root_2);
+                createTextScene2();
             }
             break;
         case 2:
@@ -1262,7 +1249,7 @@ if (nextSceneTransition){
                 beeGroup.position.z = 10;
                 camera.position.set(0, 6, 35);
                 scene.add(scene_root_3);
-                createTextScene3(); 
+                createTextScene3();
             }
             break;
         case 3:
@@ -1274,6 +1261,7 @@ if (nextSceneTransition){
                 beeGroup.position.z = 10;
                 camera.position.set(0, 6, 35);
                 scene.add(scene_root_4);
+                createTextScene4();
             }
             break;
         case 4:
@@ -1285,6 +1273,7 @@ if (nextSceneTransition){
                 beeGroup.position.z = 10;
                 camera.position.set(0, 6, 35);
                 scene.add(scene_root_5);
+                createTextScene5();
             }
             break;
         case 5:
@@ -1296,6 +1285,7 @@ if (nextSceneTransition){
                 beeGroup.position.z = 10;
                 camera.position.set(0, 6, 35);
                 scene.add(scene_root_6);
+                createTextScene6();
             }
             break;                
     }
