@@ -832,7 +832,7 @@ function createScene5() {
     // loading and adding trees
 
     // load and add rock that is mountain top
-    loadObjMtl(rock2ModelUrl, objectList, {position: new THREE.Vector3(111,0,-13), scale: new THREE.Vector3(22.0, 4.0, 8.0), rotation: new THREE.Vector3(0, 0, 0)} ,rockGroup5, group_five);
+    loadObjMtl(rock2ModelUrl, objectList, {position: new THREE.Vector3(111,0, -8), scale: new THREE.Vector3(22.0, 4.0, 8.0), rotation: new THREE.Vector3(0, 0, 0)} ,rockGroup5, group_five);
 
     
     
@@ -901,10 +901,10 @@ function createScene6() {
 
 
     // load and put moon
-    loadObjMtl(moonUrl, objectList, { position: new THREE.Vector3(-55, 5, -40.5), scale: new THREE.Vector3(0.25, 0.25, 0.25), rotation: new THREE.Vector3(0, Math.PI, 0) }, moonGroup, scene_root_6);
+    loadObjMtl(moonUrl, objectList, { position: new THREE.Vector3(-30, 5, -40.5), scale: new THREE.Vector3(0.25, 0.25, 0.25), rotation: new THREE.Vector3(0, Math.PI, 0) }, moonGroup, scene_root_6);
     
     // load campsite
-    loadGLTF(campUrl, { position: new THREE.Vector3(-9, -3, 15), scale: new THREE.Vector3(4.5, 4.5, 4.5), rotation: new THREE.Vector3(0, Math.PI, 0) }, cliffGroup6, scene_root_6 ,false);
+    loadGLTF(campUrl, { position: new THREE.Vector3(0, -3, 18), scale: new THREE.Vector3(5.5, 4.5, 4.5), rotation: new THREE.Vector3(0, Math.PI, 0) }, cliffGroup6, scene_root_6 ,false);
 
     group_six.position.x += 10;
 
@@ -1107,12 +1107,12 @@ function createBackgroundImage(textureUrl, sceneGroup) {
     const map = new THREE.TextureLoader().load(textureUrl);
     map.wrapS = map.wrapT = THREE.RepeatWrapping;
 
-    const planeGeometry = new THREE.PlaneGeometry(160, 50, 50, 50);
+    const planeGeometry = new THREE.PlaneGeometry(180, 50, 50, 50);
     const floor = new THREE.Mesh(planeGeometry, new THREE.MeshPhongMaterial({ map: map, side: THREE.DoubleSide }));
 
     floor.rotation.x = degrees_to_radians(360);
     floor.rotation.y = degrees_to_radians(0);
-    floor.position.y = 10;
+    floor.position.y = 0;
     floor.position.x = 0;
     floor.position.z = -42.5;
 
