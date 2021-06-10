@@ -61,6 +61,9 @@ let birdUrls = ["../Assets/Scene_1/Flamingo.glb", "../Assets/Scene_1/Parrot.glb"
 let sunUrl = "../Assets/Scene_1/sun.glb"
 let pineTreeGroup = new THREE.Object3D, ballTreeGroup = new THREE.Object3D, rockGroup = new THREE.Object3D, carGroup = new THREE.Object3D, sunGroup = new THREE.Object3D
 let beeUrl = "../Assets/BEE.fbx"
+const text_scene_1 = `It was bright and early, and they had a long road ahead. This didn't bother James and his dad since they would sing and laugh all the way.
+The sunrise painted a beautiful picture, with the brightest of colors and birds singing in celebration of what would be an amazing day.
+To the sound of the classics, father and son sang along, filling the car with joyful melodies.`;
 
 /* 
 SCENE 2 ASSETS
@@ -75,6 +78,8 @@ let characterUrl = "../Assets/Scene_2/characterLooking.fbx"
 const BIRD_SOUND_URI = '../Assets/audio/birds-singing-01.ogg';
 let charGroup = new THREE.Object3D;
 let charLoaded = false;
+const text_scene_2 = `After a short three hour drive they arrived to the forest. You could really see the excitement in James' face as 
+he jumped out of the car and stared in awe at the pines and trees seeming to touch the sky.`;
 
 
 /*
@@ -113,16 +118,24 @@ let group_four = null;
 let sunGroup4 = new THREE.Object3D;
 let treeGroup4 = new THREE.Object3D;
 let characterWalkingUrl = "../Assets/Scene_4/Walking.fbx";
+const text_scene_4 = `Father and son walked through the woods up a mountain where they would camp out for the night.`;
 
 /**
  * Scene 5 Assets
  */
 const FOREST_SOUND_URI = '../Assets/audio/forest-wind-ambient-01.ogg'
+const text_scene_5 = `They reached the top just in time to watch the sunset. All the trees suddenly felt small and just 
+a part of the whole landscape picture.
+As the sun painted its final brush strokes of light in the sky, they started a fire to keep themselves warm and cozy.`;
 
 /**
  * Scene 6 Assets
  */
 const CAMPFIRE_SOUND_URI = '../Assets/audio/campfire-01.ogg'
+const text_scene_6 = `As they stared into the night sky, it felt as if each star became alive while watching them. 
+All of a sudden, a light show just for them had begun. 
+James knew that whenever he looked up to the sky, he would see a reminder of the wonderful day he shared with his dad, 
+one that time could never wash away.`;
 
 
 function main() {

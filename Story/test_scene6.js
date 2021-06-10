@@ -9,10 +9,10 @@ import { MTLLoader } from '../libs/three.js/r125/loaders/MTLLoader.js';
 let renderer = null, scene = null, camera = null, orbitControls = null;
 
 // master/root groups/objects
-let scene_root_5 = null;
+let scene_root_6 = null;
 // floor group will contain the floor groups, which are going to be rotated
-let floor_group_five = null;
-let group_five = null;
+let floor_group_six = null;
+let group_six = null;
 
 // object lists
 let objectList = [];
@@ -21,7 +21,7 @@ let animatedObjects = [];
 let currentTime = Date.now();
 
 // lights for the scenes
-let spotLight1 = null, spotLight2 = null, ambientLight = null;
+let spotLight1 = null, ambientLight = null;
 
 // texture URLs
 let roadMapUrl = "../Assets/Scene_1/Road.jpg";
@@ -42,6 +42,7 @@ let lilypadUrl = "../Assets/Scene_2/lilyPad/LilyPad.gltf";
 
 let sunUrl = "../Assets/Scene_1/Sun/Sun_01.gltf";
 let cliffUrl = "../Assets/Scene_5/mountainLandscape/model.gltf";
+let campUrl = "../Assets/Scene_6/campingTent/model.gltf";
 
 let SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 2048;
 
@@ -137,7 +138,7 @@ async function loadObjMtl(objModelUrl, objectList, configuration, objGroup)
 
         objectList.push(object);
         objGroup.add(object);
-        group_five.add(objGroup);
+        group_six.add(objGroup);
     }
     catch (err){
         onError(err);
@@ -157,7 +158,7 @@ async function loadGLTF(gltfModelUrl, configuration, objectGroup, animationFlag)
         setVectorValue(object.rotation, configuration, 'rotation', new THREE.Vector3(0, 0, 0));
 
         objectGroup.add(object);
-        group_five.add(objectGroup);
+        group_six.add(objectGroup);
 
         object.animation = false;
         object.name = "sun";
@@ -210,19 +211,14 @@ function createScene5(canvas)
     orbitControls = new OrbitControls(camera, renderer.domElement);
         
     // create root object to keep all objects of this scene
-    scene_root_5 = new THREE.Object3D;
+    scene_root_6 = new THREE.Object3D;
     
     // add spotlights for hot color temp lighting on scene
     spotLight1 = new THREE.SpotLight ( 0xF8B195 );
     spotLight1.position.set(-6, 10, 35);
     spotLight1.target.position.set(-6, 20, 20);
-    
-    spotLight2 = new THREE.SpotLight ( 0xF67280 );
-    spotLight2.position.set(-7, 12, 35);
-    spotLight2.target.position.set(-6, 20, 20);
 
-    scene_root_5.add(spotLight1);
-    scene_root_5.add(spotLight2);
+    scene_root_6.add(spotLight1);
 
 
     spotLight1.castShadow = true;
@@ -232,24 +228,16 @@ function createScene5(canvas)
     spotLight1.shadow.mapSize.width = SHADOW_MAP_WIDTH;
     spotLight1.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
 
-    spotLight2.castShadow = true;
-    spotLight2.shadow.camera.near = 1;
-    spotLight2.shadow.camera.far = 200;
-    spotLight2.shadow.camera.fov = 45;
-    spotLight2.shadow.mapSize.width = SHADOW_MAP_WIDTH;
-    spotLight2.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
-    // -------------------------------------------
-
     
 
     ambientLight = new THREE.AmbientLight ( 0x888888 );
-    scene_root_5.add(ambientLight);
+    scene_root_6.add(ambientLight);
     
     // object groups for hierarchy and management in master scene file
-    group_five = new THREE.Object3D;
-    floor_group_five = new THREE.Object3D;
-    scene_root_5.add(group_five);
-    scene_root_5.add(floor_group_five)
+    group_six = new THREE.Object3D;
+    floor_group_six = new THREE.Object3D;
+    scene_root_6.add(group_six);
+    scene_root_6.add(floor_group_six)
     
     // background image
     createBackgroundImage(sunriseUrl);
@@ -274,18 +262,18 @@ function createScene5(canvas)
     // loading and adding trees
 
     // load and add rock that is mountain top
-    loadObjMtl(rock2ModelUrl, objectList, {position: new THREE.Vector3(111,0,-13), scale: new THREE.Vector3(22.0, 4.0, 8.0), rotation: new THREE.Vector3(0, 0, 0)} ,rockGroup5, group_five);
+    loadObjMtl(rock2ModelUrl, objectList, {position: new THREE.Vector3(111,0,-13), scale: new THREE.Vector3(22.0, 4.0, 8.0), rotation: new THREE.Vector3(0, 0, 0)} ,rockGroup5, group_six);
 
     
     
-    // load cilff/mountains for landscape
-    loadGLTF(cliffUrl, { position: new THREE.Vector3(-7, -20, -42), scale: new THREE.Vector3(10.0, 7.0, 7.0), rotation: new THREE.Vector3(0, 0, 0) }, cliffGroup, false);
+    // load campsite
+    loadGLTF(campUrl, { position: new THREE.Vector3(0, 0, 0), scale: new THREE.Vector3(10.0, 7.0, 7.0), rotation: new THREE.Vector3(0, 0, 0) }, cliffGroup, false);
 
 
 
 
 
-    group_five.position.x += 10;
+    group_six.position.x += 10;
 
     setTimeout(() => {
       document.getElementById('storyText').innerHTML = text_scene_3;  
@@ -295,7 +283,7 @@ function createScene5(canvas)
     
     
     // add root group -which contains all scene assets- to the scene
-    scene.add( scene_root_5 );
+    scene.add( scene_root_6 );
 }
 
 
@@ -336,7 +324,7 @@ function createBackgroundImage(textureUrl){
     background.position.y = 9.8;
     background.position.z = -42.5;
     
-    group_five.add( background );
+    group_six.add( background );
     background.castShadow = false;
     background.receiveShadow = true;
 }
@@ -355,7 +343,7 @@ lakeSurface.position.x = 67;
 lakeSurface.position.y = -4;
 lakeSurface.position.z = -20;
   
-  group_five.add( lakeSurface );
+  group_six.add( lakeSurface );
   lakeSurface.castShadow = false;
   lakeSurface.receiveShadow = true;
 }
@@ -373,7 +361,7 @@ function createDirtFloor(){
     floor.position.y = -2.01;
     floor.position.z = -15;
     
-    floor_group_five.add( floor );
+    floor_group_six.add( floor );
     floor.castShadow = false;
     floor.receiveShadow = true;
 }
