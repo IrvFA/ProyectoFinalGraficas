@@ -30,9 +30,14 @@ let beeGroup = new THREE.Object3D;
 /**
  * AUDIO ASSETS
  */
-
  const audioListener = new THREE.AudioListener();
- const sound = new THREE.Audio(audioListener);
+ const music_sound = new THREE.Audio(audioListener);
+ const scene_1_sound = new THREE.Audio(audioListener);
+ const scene_2_sound = new THREE.Audio(audioListener);
+ const scene_3_sound = new THREE.Audio(audioListener);
+ const scene_4_sound = new THREE.Audio(audioListener);
+ const scene_5_sound = new THREE.Audio(audioListener);
+ const scene_6_sound = new THREE.Audio(audioListener);
  const audioLoader = new THREE.AudioLoader();
 
 /*
@@ -67,6 +72,7 @@ let carGroup2 = new THREE.Object3D;
 let animatedObjects2 = [];
 let mountainUrl = {obj: "../Assets/Scene_2/mountain_asset/lowpolymountains.obj", mtl: "../Assets/Scene_2/mountain_asset/lowpolymountains.mtl"}
 let characterUrl = "../Assets/Scene_2/characterLooking.fbx"
+const BIRD_SOUND_URI = '../Assets/audio/birds-singing-01.ogg';
 let charGroup = new THREE.Object3D;
 let charLoaded = false;
 
@@ -87,6 +93,7 @@ let lake = null;
 let lakeAnimator = null;
 let animateLake = false;
 let characterThrowingUrl = "../Assets/Scene_3/Throwing.fbx"
+const LAKE_SOUND_URI = '../Assets/audio/lake-shore-01.ogg';
 const text_scene_3 = `They soon reached a peaceful lake. They were the only ones there.
 Time flew. The lake and the forest blended as one.
 It was just them and the lake.`;
@@ -106,6 +113,16 @@ let group_four = null;
 let sunGroup4 = new THREE.Object3D;
 let treeGroup4 = new THREE.Object3D;
 let characterWalkingUrl = "../Assets/Scene_4/Walking.fbx";
+
+/**
+ * Scene 5 Assets
+ */
+const FOREST_SOUND_URI = '../Assets/audio/forest-wind-ambient-01.ogg'
+
+/**
+ * Scene 6 Assets
+ */
+const CAMPFIRE_SOUND_URI = '../Assets/audio/campfire-01.ogg'
 
 
 function main() {
@@ -569,10 +586,10 @@ function createScene3() {
 function createScene4() {
     audioLoader.load( TRAIL_FOOTSTEPS_SOUND_URI, 
         function( buffer ) {
-            sound.setBuffer( buffer );
-            sound.setLoop( true );
-            sound.setVolume( 0.75 );
-            // sound.play();
+            scene_4_sound.setBuffer( buffer );
+            scene_4_sound.setLoop( true );
+            scene_4_sound.setVolume( 0.75 );
+            scene_4_sound.play();
     },
     // onProgress callback
     function ( xhr ) {
