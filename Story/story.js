@@ -77,7 +77,7 @@ let characterUrl = "../Assets/Scene_2/characterLooking.fbx"
 const BIRD_SOUND_URI = '../Assets/audio/birds-singing-01.ogg';
 let charGroup = new THREE.Object3D;
 let charLoaded = false;
-const text_scene_2 = `After a short three hour drive they arrived to the forest. You could really see the excitement in James' face as 
+const text_scene_2 = `After a three hour drive they arrived to the forest. You could really see the excitement in James' face as 
 he jumped out of the car and stared in awe at the pines and trees seeming to touch the sky.`;
 
 
@@ -839,7 +839,7 @@ function createScene5() {
     // load and add rock that is mountain top
     loadObjMtl(rock2ModelUrl, objectList, {position: new THREE.Vector3(111,0, -8), scale: new THREE.Vector3(22.0, 4.0, 8.0), rotation: new THREE.Vector3(0, 0, 0)} ,rockGroup5, group_five);
 
-    
+    loadCharFBX(characterWalkingUrl, {position: new THREE.Vector3(0, floor, 10), scale: new THREE.Vector3(0.03, 0.03, 0.03), rotation:  new THREE.Vector3(0,-90,0)}, animatedObjects4, charGroup4, group_four)
     
     // load cilff/mountains for landscape
     loadGLTF(cliffUrl, { position: new THREE.Vector3(-7, -20, -42), scale: new THREE.Vector3(10.0, 7.0, 7.0), rotation: new THREE.Vector3(0, 0, 0) }, cliffGroup, group_five,false);
