@@ -62,8 +62,7 @@ let sunUrl = "../Assets/Scene_1/sun.glb"
 let pineTreeGroup = new THREE.Object3D, ballTreeGroup = new THREE.Object3D, rockGroup = new THREE.Object3D, carGroup = new THREE.Object3D, sunGroup = new THREE.Object3D
 let beeUrl = "../Assets/BEE.fbx"
 const text_scene_1 = `It was bright and early, and they had a long road ahead. This didn't bother James and his dad since they would sing and laugh all the way.
-The sunrise painted a beautiful picture, with the brightest of colors and birds singing in celebration of what would be an amazing day.
-To the sound of the classics, father and son sang along, filling the car with joyful melodies.`;
+The sunrise painted a beautiful picture, with the brightest of colors and birds singing in celebration of what would be an amazing day.`;
 
 /* 
 SCENE 2 ASSETS
@@ -724,15 +723,55 @@ function createScene4() {
 
     group_four.position.x += 10;
 
+    // delayed text creation
     setTimeout(() => {
-      document.getElementById('storyText').innerHTML = text_scene_3;  
+      document.getElementById('storyText').innerHTML = text_scene_4;  
     },
-    3000);
+    2000);
     
 }
 
+
+function createTextScene1() {
+    setTimeout(() => {
+        document.getElementById('storyText').innerHTML = text_scene_1;     
+    },
+    2000);
+}
+
+function createTextScene2() {
+    setTimeout(() => {
+        document.getElementById('storyText').innerHTML = text_scene_2;     
+    },
+    2000);
+}
+
 function createTextScene3() {
-    document.getElementById('storyText').innerHTML = text_scene_3; 
+    setTimeout(() => {
+        document.getElementById('storyText').innerHTML = text_scene_3;     
+    },
+    2000);
+}
+
+function createTextScene4() {
+    setTimeout(() => {
+        document.getElementById('storyText').innerHTML = text_scene_4;     
+    },
+    2000);
+}
+
+function createTextScene5() {
+    setTimeout(() => {
+        document.getElementById('storyText').innerHTML = text_scene_5;     
+    },
+    2000);
+}
+
+function createTextScene6() {
+    setTimeout(() => {
+        document.getElementById('storyText').innerHTML = text_scene_6;     
+    },
+    2000);
 }
 
 function update() {
