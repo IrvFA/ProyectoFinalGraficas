@@ -10,6 +10,8 @@ let renderer = null, scene = null, camera = null, orbitControls = null;
 
 // master/root groups/objects
 let scene_root_4 = null;
+// floor group will contain the floor groups, which are going to be rotated
+let floor_group_four = null;
 let group_four = null;
 
 // object lists
@@ -55,7 +57,7 @@ let animatePointer = true;
 let keyAnimations = [];
 
 // elements for playing sound
-const LAKE_SOUND_URI = '../Assets/audio/trail-footsteps-01.ogg';
+const TRAIL_FOOTSTEPS_SOUND_URI = '../Assets/audio/trail-footsteps-01.ogg';
 const audioListener = new THREE.AudioListener();
 const sound = new THREE.Audio(audioListener);
 const audioLoader = new THREE.AudioLoader();
@@ -181,7 +183,7 @@ function createScene4(canvas)
     camera.add(audioListener);
     
     // load and play scene audio
-    audioLoader.load( LAKE_SOUND_URI, 
+    audioLoader.load( TRAIL_FOOTSTEPS_SOUND_URI, 
         function( buffer ) {
             sound.setBuffer( buffer );
             sound.setLoop( true );
@@ -235,7 +237,9 @@ function createScene4(canvas)
 
     
     group_four = new THREE.Object3D;
+    floor_group_four = new THREE.Object3D;
     scene_root_4.add(group_four);
+    scene_root_4.add(floor_group_four)
     
     
     
@@ -243,14 +247,22 @@ function createScene4(canvas)
 
     // floor with grass
     createDirtFloor(dirtUrl);
-    createGrassFloor(grassUrl, group_four);
+    createGrassFloor(grassUrl, floor_group_four);
     createLakeSurface(waterUrl);
+
+    floor_group_four.rotation.z = degrees_to_radians(-5);
 
 
     loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-50,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
     loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-10,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
     loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(30, floor,-40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
     loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(60,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
+    mountainGroup.position.x = -35;
+    mountainGroup.position.y = 5;
+    mountainGroup.position.z = 5;
+
+
+    mountainGroup.rotation.y = degrees_to_radians(-10);
 
     loadGLTF(sunUrl, { position: new THREE.Vector3(-5, 25, -60), scale: new THREE.Vector3(0.02, 0.02, 0.02), rotation: new THREE.Vector3(33, 0, 0) }, sunGroup, true);
 
@@ -311,10 +323,11 @@ function createLakeSurface() {
   const planeGeometry = new THREE.PlaneGeometry(115, 85, 50, 50);
   const lakeSurface = new THREE.Mesh(planeGeometry, new THREE.MeshPhongMaterial({map:map, side:THREE.DoubleSide}));
 
-  lakeSurface.rotation.x = -Math.PI / 2;
-  lakeSurface.position.x = 70;
-  lakeSurface.position.y = -1.95;
-  lakeSurface.position.z = -40;
+
+lakeSurface.rotation.x = degrees_to_radians(-90);
+lakeSurface.position.x = 67;
+lakeSurface.position.y = -1.95;
+lakeSurface.position.z = -20;
   
   group_four.add( lakeSurface );
   lakeSurface.castShadow = false;
@@ -334,7 +347,7 @@ function createDirtFloor(){
     floor.position.y = -2.01;
     floor.position.z = -15;
     
-    group_four.add( floor );
+    floor_group_four.add( floor );
     floor.castShadow = false;
     floor.receiveShadow = true;
 }
