@@ -36,11 +36,12 @@ let pineTreeModelUrl = {obj: "../Assets/Scene_1/pineTree.obj", mtl: "../Assets/S
 let ballTreeModelUrl = {obj: "../Assets/Scene_1/ballTree.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl"};
 let bushTreeModelUrl = {obj: "../Assets/Scene_1/bush.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl"};
 let rock2ModelUrl = {obj: "../Assets/Scene_1/rock2.obj", mtl: "../Assets/Scene_1/NatureFreePack1.mtl"};
-let mountainUrl = {obj: "../Assets/Scene_2/mountain_asset/lowpolymountains.obj", mtl: "../Assets/Scene_2/mountain_asset/lowpolymountains.mtl"}
+let mountainUrl = {obj: "../Assets/Scene_2/mountain_asset/lowpolymountains.obj", mtl: "../Assets/Scene_2/mountain_asset/lowpolymountains.mtl"};
 let carModelUrl = {obj: "../Assets/Scene_1/car/toon_car.obj", mtl: "../Assets/Scene_1/car/toon_car.mtl"};
 let lilypadUrl = "../Assets/Scene_2/lilyPad/LilyPad.gltf";
 
 let sunUrl = "../Assets/Scene_1/Sun/Sun_01.gltf";
+let moonUrl = {obj: "../Assets/Scene_6/moon.obj", mtl: "../Assets/Scene_6/moon.mtl"};
 let cliffUrl = "../Assets/Scene_5/mountainLandscape/model.gltf";
 let campUrl = "../Assets/Scene_6/campingTent/model.gltf";
 
@@ -51,7 +52,7 @@ let cliffGroup = new THREE.Object3D;
 let leafGroup = new THREE.Object3D;
 let treeGroup = new THREE.Object3D;
 let mountainGroup = new THREE.Object3D;
-let carGroup = new THREE.Object3D;
+let moonGroup = new THREE.Object3D;
 let floor = -2;
 
 let rockGroup5 = new THREE.Object3D;
@@ -62,12 +63,12 @@ let animatePointer = true;
 let keyAnimations = [];
 
 // elements for playing sound
-const FOREST_SOUND_URI = '../Assets/audio/forest-wind-ambient-01.ogg';
+const CAMPFIRE_SOUND_URI = '../Assets/audio/campfire-01.ogg';
 const audioListener = new THREE.AudioListener();
 const sound = new THREE.Audio(audioListener);
 const audioLoader = new THREE.AudioLoader();
 
-const text_scene_3 = `This is scene 5 text`;
+const text_scene_6 = `This is scene 6 text`;
 
 
 function main() 
@@ -188,7 +189,7 @@ function createScene5(canvas)
     camera.add(audioListener);
     
     // load and play scene audio
-    audioLoader.load( FOREST_SOUND_URI, 
+    audioLoader.load( CAMPFIRE_SOUND_URI, 
         function( buffer ) {
             sound.setBuffer( buffer );
             sound.setLoop( true );
@@ -214,7 +215,7 @@ function createScene5(canvas)
     scene_root_6 = new THREE.Object3D;
     
     // add spotlights for hot color temp lighting on scene
-    spotLight1 = new THREE.SpotLight ( 0xF8B195 );
+    spotLight1 = new THREE.SpotLight ( 0x355C7D );
     spotLight1.position.set(-6, 10, 35);
     spotLight1.target.position.set(-6, 20, 20);
 
@@ -230,7 +231,7 @@ function createScene5(canvas)
 
     
 
-    ambientLight = new THREE.AmbientLight ( 0x888888 );
+    ambientLight = new THREE.AmbientLight ( 0x355C7D );
     scene_root_6.add(ambientLight);
     
     // object groups for hierarchy and management in master scene file
@@ -240,43 +241,19 @@ function createScene5(canvas)
     scene_root_6.add(floor_group_six)
     
     // background image
-    createBackgroundImage(sunriseUrl);
-
-    // create floor assets and add rotation to hill subgroup
-    // createDirtFloor(dirtUrl);
+    createBackgroundImage(waterUrl);
 
 
-    // adding mountains
-    // loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-50,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
-    // loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-10,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
-    // loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(30, floor,-40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
-    // loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(60,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
-    // mountainGroup.position.x = -35;
-    // mountainGroup.position.z = 5;
-    // mountainGroup.rotation.y = degrees_to_radians(-10);
-
-    // loading and adding sun
-    loadGLTF(sunUrl, { position: new THREE.Vector3(-7, 25, -42), scale: new THREE.Vector3(0.02, 0.02, 0.02), rotation: new THREE.Vector3(33, 0, 0) }, sunGroup, true);
-
-
-    // loading and adding trees
-
-    // load and add rock that is mountain top
-    loadObjMtl(rock2ModelUrl, objectList, {position: new THREE.Vector3(111,0,-13), scale: new THREE.Vector3(22.0, 4.0, 8.0), rotation: new THREE.Vector3(0, 0, 0)} ,rockGroup5, group_six);
-
-    
+    // load and put moon
+    loadObjMtl(moonUrl, objectList, { position: new THREE.Vector3(-55, 5, -40.5), scale: new THREE.Vector3(0.25, 0.25, 0.25), rotation: new THREE.Vector3(0, Math.PI, 0) }, moonGroup);
     
     // load campsite
-    loadGLTF(campUrl, { position: new THREE.Vector3(0, 0, 0), scale: new THREE.Vector3(10.0, 7.0, 7.0), rotation: new THREE.Vector3(0, 0, 0) }, cliffGroup, false);
-
-
-
-
+    loadGLTF(campUrl, { position: new THREE.Vector3(-9, -3, 15), scale: new THREE.Vector3(4.5, 4.5, 4.5), rotation: new THREE.Vector3(0, Math.PI, 0) }, cliffGroup, false);
 
     group_six.position.x += 10;
 
     setTimeout(() => {
-      document.getElementById('storyText').innerHTML = text_scene_3;  
+      document.getElementById('storyText').innerHTML = text_scene_6;  
     },
     3000);
     
