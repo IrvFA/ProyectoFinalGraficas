@@ -142,6 +142,9 @@ let cliffUrl = "../Assets/Scene_5/mountainLandscape/model.gltf";
 let sunGroup5 = new THREE.Object3D;
 let cliffGroup = new THREE.Object3D;
 let rockGroup5 = new THREE.Object3D;
+let moonGroup5 = new THREE.Object3D;
+let charGroup5v = new THREE.Object3D;
+let charShoutingUrl = "Assets/Scene_5/Sitting Laughing.fbx";
 /**
  * Scene 6 Assets
  */
