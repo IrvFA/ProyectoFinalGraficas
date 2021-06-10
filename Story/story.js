@@ -23,7 +23,7 @@ let currentTime = Date.now();
 let spotLight = null, ambientLight = null;
 
 let raycaster = null, mouse = new THREE.Vector2(), intersected, clicked;
-let nextSceneTransition = false, currentScene= 2, lastSceneTransition = false;
+let nextSceneTransition = false, currentScene= 0, lastSceneTransition = false;
 
 let beeGroup = new THREE.Object3D;
 
@@ -62,6 +62,7 @@ let characterUrl = "../Assets/Scene_2/characterLooking.fbx"
 let charGroup = new THREE.Object3D;
 let charLoaded = false;
 
+
 /*
 SCENE 3 ASSETS
 */
@@ -74,6 +75,9 @@ let rockGroup3= new THREE.Object3D;
 let treeGroup3 = new THREE.Object3D;
 let sunGroup3 = new THREE.Object3D;
 let charGroup3 = new THREE.Object3D;
+let lake = null;
+let lakeAnimator = null;
+let animateLake = false;
 let characterThrowingUrl = "../Assets/Scene_3/Throwing.fbx"
 const text_scene_3 = `They soon reached a peaceful lake. They were the only ones there.
 Time flew. The lake and the forest blended as one.
@@ -350,7 +354,7 @@ function createScene(canvas) {
 
     scene.add(camera);
 
-    createScene3()
+    createScene1()
 }
 
 function createScene1() {
@@ -537,6 +541,7 @@ function update() {
     requestAnimationFrame(function () { update(); });
 
     renderer.render(scene, camera);
+    
 
     animate();
     checkSceneTransition();
@@ -620,7 +625,7 @@ function animateScene3() {
         if (object.mixer)
             object.mixer.update(deltat * 0.001);
     }
-
+    KF.update();
 }
 
 function createLakeSurface(waterUrl, group) {
@@ -635,6 +640,7 @@ function createLakeSurface(waterUrl, group) {
     lakeSurface.position.x = 10;
     lakeSurface.position.z = -40;
     
+    lake = lakeSurface;
     group.add( lakeSurface );
     lakeSurface.castShadow = false;
     lakeSurface.receiveShadow = true;
@@ -730,6 +736,43 @@ function resize() {
 }
 
 function checkSceneTransition() {
+if (lastSceneTransition){
+        switch (currentScene){
+            case 0:
+                beeGroup.position.z -= 1.5;
+                camera.position.z -= 1;
+                if (camera.position.z < -30){
+                    scene.remove(scene_root_2);
+                    lastSceneTransition = false;
+                    beeGroup.position.z = 10;
+                    camera.position.set(0, 6, 35);
+                    scene.add(scene_root_1)
+                }
+                break;
+            case 1:
+                beeGroup.position.z -= 1.5;
+                camera.position.z -= 1;
+                if (camera.position.z < -30){
+                    scene.remove(scene_root_1);
+                    nextSceneTransition = false;
+                    beeGroup.position.z = 10;
+                    createScene2();
+                }
+                break;
+            case 2:
+                beeGroup.position.z -= 1.5;
+                camera.position.z -= 1;
+                if (camera.position.z < -30){
+                    scene.remove(scene_root_2);
+                    nextSceneTransition = false;
+                    beeGroup.position.z = 10;
+                    createScene3(); 
+                    console.log(lake);
+                }
+    
+                    
+        }
+    }
 if (nextSceneTransition){
     switch (currentScene){
         case 1:
@@ -749,7 +792,8 @@ if (nextSceneTransition){
                 scene.remove(scene_root_2);
                 nextSceneTransition = false;
                 beeGroup.position.z = 10;
-                createScene3();
+                createScene3(); 
+                console.log(lake);
             }
 
                 
@@ -760,7 +804,9 @@ if (nextSceneTransition){
 
 function initControls() {
     document.querySelector("#last-scene").addEventListener('click', () => { 
-        currentScene--;
+        lastSceneTransition = true;
+        if (currentScene == 0) currentScene = 0;
+        else currentScene--;
     } );
     document.querySelector("#next-scene").addEventListener('click', () => { 
         nextSceneTransition = true;
@@ -770,7 +816,7 @@ function initControls() {
 } 
 
 window.onload = () => {
-    main()
+    main();
     resize();
     initControls();
 };
