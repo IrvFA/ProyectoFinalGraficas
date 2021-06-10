@@ -9,8 +9,8 @@ import { MTLLoader } from '../libs/three.js/r125/loaders/MTLLoader.js';
 let renderer = null, scene = null, camera = null, group = null, orbitControls = null;
 
 // master/root groups/objects
-let scene_root_3 = null;
-let group_three = null;
+let scene_root_4 = null;
+let group_four = null;
 
 // object lists
 let objectList = [];
@@ -55,14 +55,12 @@ let animatePointer = true;
 let keyAnimations = [];
 
 // elements for playing sound
-const LAKE_SOUND_URI = '../Assets/audio/lake-shore-01.ogg';
+const LAKE_SOUND_URI = '../Assets/audio/trail-footsteps-01.ogg';
 const audioListener = new THREE.AudioListener();
 const sound = new THREE.Audio(audioListener);
 const audioLoader = new THREE.AudioLoader();
 
-const text_scene_3 = `They soon reched a peaceful lake. They were the only ones there.
-Time flew. The lake and the forest blended as one.
-It was just them and the lake.`;
+const text_scene_3 = `Father and son kept walking through the forest trail, up a small mountain, to where they could camp for the night.`;
 
 
 function main() 
@@ -215,13 +213,13 @@ function createScene3(canvas)
     orbitControls = new OrbitControls(camera, renderer.domElement);
         
     // create root object to keep all objects of this scene
-    scene_root_3 = new THREE.Object3D;
+    scene_root_4 = new THREE.Object3D;
     
     // add lighting to scene
     spotLight = new THREE.SpotLight ("white");
     spotLight.position.set(-6, 10, 35);
     spotLight.target.position.set(-6, 20, 20);
-    scene_root_3.add(spotLight);
+    scene_root_4.add(spotLight);
     spotLight.castShadow = true;
     spotLight.shadow.camera.near = 1;
     spotLight.shadow.camera.far = 200;
@@ -231,13 +229,13 @@ function createScene3(canvas)
     spotLight.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
 
     ambientLight = new THREE.AmbientLight ( 0x888888 );
-    scene_root_3.add(ambientLight);
+    scene_root_4.add(ambientLight);
     
     //loadGLTF();
 
     
     group = new THREE.Object3D;
-    scene_root_3.add(group);
+    scene_root_4.add(group);
     
     
     
@@ -278,7 +276,7 @@ function createScene3(canvas)
     // scene.add(group);
     
     // if we comment out this line, it all disappears
-    scene.add( scene_root_3 );
+    scene.add( scene_root_4 );
 }
 
 function createScene6(canvas) {
