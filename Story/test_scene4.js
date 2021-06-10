@@ -6,7 +6,7 @@ import { FBXLoader } from '../libs/three.js/r125/loaders/FBXLoader.js';
 import { MTLLoader } from '../libs/three.js/r125/loaders/MTLLoader.js';
 
 // Three and scene key elements
-let renderer = null, scene = null, camera = null, group = null, orbitControls = null;
+let renderer = null, scene = null, camera = null, orbitControls = null;
 
 // master/root groups/objects
 let scene_root_4 = null;
@@ -26,7 +26,7 @@ let roadMapUrl = "../Assets/Scene_1/Road.jpg";
 let canvasUrl = "../Assets/canvas_background.jpg";
 let sunriseUrl = "../Assets/Scene_1/sunrise_background.jpg";
 let waterUrl = "../Assets/Scene_3/waterTexture.png";
-let grassUrl = "../Assets/Scene_3/Grass/Vol_42_1_Base_Color.png"
+let grassUrl = { map: "../Assets/Scene_3/Grass/Vol_42_1_Base_Color.png", normalMap: "../Assets/Scene_3/Grass/Vol_42_1_Normal.png"}
 let dirtUrl = {map: "../Assets/Scene_3/DirtPath/Vol_16_2_Base_Color.png", normalMap: "../Assets/Scene_3/DirtPath/Vol_16_2_Normal.png"}
 
 // 3D asset URLs
@@ -66,7 +66,7 @@ const text_scene_3 = `Father and son kept walking through the forest trail, up a
 function main() 
 {
     const canvas = document.getElementById("webglcanvas");
-    createScene3(canvas);
+    createScene4(canvas);
     update();
 }
 
@@ -131,7 +131,7 @@ async function loadObjMtl(objModelUrl, objectList, configuration, objGroup)
 
         objectList.push(object);
         objGroup.add(object);
-        group.add(objGroup);
+        group_four.add(objGroup);
     }
     catch (err){
         onError(err);
@@ -151,7 +151,7 @@ async function loadGLTF(gltfModelUrl, configuration, objectGroup, animationFlag)
         setVectorValue(object.rotation, configuration, 'rotation', new THREE.Vector3(0, 0, 0));
 
         objectGroup.add(object);
-        group.add(objectGroup);
+        group_four.add(objectGroup);
 
         object.animation = false;
         object.name = "sun";
@@ -163,7 +163,7 @@ async function loadGLTF(gltfModelUrl, configuration, objectGroup, animationFlag)
 }
 
 
-function createScene3(canvas) 
+function createScene4(canvas) 
 {    
     renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
     renderer.setSize(canvas.width, canvas.height);
@@ -176,7 +176,8 @@ function createScene3(canvas)
 
     // create, position, and add camera to scene
     camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
-    camera.position.set(0, 6, 30);
+    camera.position.set(0, 6, 33);
+    // camera.rotation.y = degrees_to_radians(10);
     camera.add(audioListener);
     
     // load and play scene audio
@@ -231,26 +232,20 @@ function createScene3(canvas)
     ambientLight = new THREE.AmbientLight ( 0x888888 );
     scene_root_4.add(ambientLight);
     
-    //loadGLTF();
 
     
-    group = new THREE.Object3D;
-    scene_root_4.add(group);
+    group_four = new THREE.Object3D;
+    scene_root_4.add(group_four);
     
     
     
 
 
     // floor with grass
-    createGrassFloor(grassUrl);
+    createDirtFloor(dirtUrl);
+    createGrassFloor(grassUrl, group_four);
     createLakeSurface(waterUrl);
 
-    let positionZ = 10;
-    let pinePosition = -10;
-    for (let i=0; i<10; i++){
-        loadObjMtl(pineTreeModelUrl, objectList,{ position: new THREE.Vector3(-26+Math.floor(Math.random()*-40), floor, -pinePosition), scale: new THREE.Vector3(1, 1, 1), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup);
-        loadObjMtl(pineTreeModelUrl, objectList,{ position: new THREE.Vector3(7-Math.floor(Math.random()*10), floor, -pinePosition), scale: new THREE.Vector3(1, 1, 1), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup);
-    }
 
     loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-50,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
     loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-10,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup);
@@ -261,7 +256,7 @@ function createScene3(canvas)
 
     
 
-    group.position.x += 10;
+    group_four.position.x += 10;
 
     setTimeout(() => {
       document.getElementById('storyText').innerHTML = text_scene_3;  
@@ -279,20 +274,7 @@ function createScene3(canvas)
     scene.add( scene_root_4 );
 }
 
-function createScene6(canvas) {
-    console.log('scene 6');
-    document.getElementById('storyText').innerHTML = `This is scene 6 on createScene6()`;
 
-    scene_root_6 = new THREE.Object3D;
-    ambientLight = new THREE.AmbientLight ( 0x888888 );
-    scene_root_6.add(ambientLight);
-
-    group = new THREE.Object3D;
-    scene_root_6.add(group);
-    createGrassFloor(grassUrl);
-
-    scene.add( scene_root_6 );
-}
 
 function update() 
 {
@@ -321,26 +303,6 @@ function animate(){
 }
 
 
-
-function createFloor(floorMapUrl){
-    const map = new THREE.TextureLoader().load(floorMapUrl);
-    map.wrapS = map.wrapT = THREE.RepeatWrapping;
-    map.repeat.set(2, 1);
-
-    const planeGeometry = new THREE.PlaneGeometry(25, 75, 50, 50);
-    const floor = new THREE.Mesh(planeGeometry, new THREE.MeshPhongMaterial({map:map, side:THREE.DoubleSide}));
-
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -2;
-    floor.position.x = -12
-    floor.position.z = -5
-    
-    group.add( floor );
-    floor.castShadow = false;
-    floor.receiveShadow = true;
-
-}
-
 function createLakeSurface() {
   const map = new THREE.TextureLoader().load(waterUrl);
   map.wrapS = map.wrapT = THREE.RepeatWrapping;
@@ -350,16 +312,16 @@ function createLakeSurface() {
   const lakeSurface = new THREE.Mesh(planeGeometry, new THREE.MeshPhongMaterial({map:map, side:THREE.DoubleSide}));
 
   lakeSurface.rotation.x = -Math.PI / 2;
-  lakeSurface.position.y = -2.5;
-  lakeSurface.position.x = 10;
+  lakeSurface.position.x = 70;
+  lakeSurface.position.y = -1.95;
   lakeSurface.position.z = -40;
   
-  group.add( lakeSurface );
+  group_four.add( lakeSurface );
   lakeSurface.castShadow = false;
   lakeSurface.receiveShadow = true;
 }
 
-function createGrassFloor(){
+function createDirtFloor(){
     const map = new THREE.TextureLoader().load(dirtUrl.map);
     map.wrapS = map.wrapT = THREE.RepeatWrapping;
     map.repeat.set(2, 1);
@@ -368,32 +330,37 @@ function createGrassFloor(){
     const floor = new THREE.Mesh(planeGeometry, new THREE.MeshPhongMaterial({map:map, side:THREE.DoubleSide}));
 
     floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -2.01;
     floor.position.x = 0;
-    floor.position.z = 45;
+    floor.position.y = -2.01;
+    floor.position.z = -15;
     
-    group.add( floor );
+    group_four.add( floor );
     floor.castShadow = false;
     floor.receiveShadow = true;
 }
 
-function createBackgroundImage(textureUrl){
-    const map = new THREE.TextureLoader().load(textureUrl);
-    map.wrapS = map.wrapT = THREE.RepeatWrapping;
+function createGrassFloor(grassUrl, group) {
+  const map = new THREE.TextureLoader().load(grassUrl["map"]);
+  const normalMap = new THREE.TextureLoader().load(grassUrl["normalMap"]);
+  const roughnessMap = new THREE.TextureLoader().load(grassUrl["roughnessMap"])
+  map.wrapS = map.wrapT = THREE.RepeatWrapping;
+  map.repeat.set(2, 1);
 
-    const planeGeometry = new THREE.PlaneGeometry(115, 25, 50, 50);
-    const floor = new THREE.Mesh(planeGeometry, new THREE.MeshPhongMaterial({map:map, side:THREE.DoubleSide}));
+  const planeGeometry = new THREE.PlaneGeometry(115, 85, 50, 50);
+  const floor = new THREE.Mesh(planeGeometry, new THREE.MeshPhongMaterial({ map: map, side: THREE.DoubleSide, normalMap: normalMap, roughness: roughnessMap }));
 
-    floor.rotation.x = degrees_to_radians(360);
-    floor.rotation.y = degrees_to_radians(0);
-    floor.position.y = 10;
-    floor.position.x =0;
-    floor.position.z = -42.5;
-    
-    group.add( floor );
-    floor.castShadow = false;
-    floor.receiveShadow = true;
+  floor.rotation.x = degrees_to_radians(90);
+  floor.rotation.z = degrees_to_radians(10);
+  // floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -1.99;
+  floor.position.x = 0;
+  floor.position.z = -35;
+
+  group.add(floor);
+  floor.castShadow = false;
+  floor.receiveShadow = true;
 }
+
 
 function range(start, end) {
 	/* generate a range : [start, start+1, ..., end-1, end] */
