@@ -20,7 +20,7 @@ let objectList = [];
 
 let currentTime = Date.now();
 
-let spotLight = null, ambientLight = null;
+let spotLight = null, ambientLight = null, spotLight1 = null, spotLight2 = null;
 
 let raycaster = null, mouse = new THREE.Vector2(), intersected, clicked;
 let nextSceneTransition = false, currentScene= 0, lastSceneTransition = false;
@@ -117,6 +117,7 @@ let group_four = null;
 let sunGroup4 = new THREE.Object3D;
 let charGroup4 = new THREE.Object3D;
 let treeGroup4 = new THREE.Object3D;
+let wolfGroup4 = new THREE.Object3D;
 let characterWalkingUrl = "../Assets/Scene_4/Walking.fbx";
 let wolfUrl = "../Assets/Scene_4/Wolf.glb"
 const text_scene_4 = `Father and son walked through the woods up a mountain where they would camp out for the night.`;
@@ -124,11 +125,23 @@ const text_scene_4 = `Father and son walked through the woods up a mountain wher
 /**
  * Scene 5 Assets
  */
+
+// master/root groups/objects
+let scene_root_5 = null;
+// floor group will contain the floor groups, which are going to be rotated
+let floor_group_five = null;
+let group_five = null;
+let objectList5 = [];
+let animatedObjects5 = [];
+
 const FOREST_SOUND_URI = '../Assets/audio/forest-wind-ambient-01.ogg'
 const text_scene_5 = `They reached the top just in time to watch the sunset. All the trees suddenly felt small and just 
 a part of the whole landscape picture.
 As the sun painted its final brush strokes of light in the sky, they started a fire to keep themselves warm and cozy.`;
-
+let cliffUrl = "../Assets/Scene_5/mountainLandscape/model.gltf";
+let sunGroup5 = new THREE.Object3D;
+let cliffGroup = new THREE.Object3D;
+let rockGroup5 = new THREE.Object3D;
 /**
  * Scene 6 Assets
  */
@@ -137,6 +150,19 @@ const text_scene_6 = `As they stared into the night sky, it felt as if each star
 All of a sudden, a light show just for them had begun. 
 James knew that whenever he looked up to the sky, he would see a reminder of the wonderful day he shared with his dad, 
 one that time could never wash away.`;
+
+// master/root groups/objects
+let scene_root_6 = null;
+// floor group will contain the floor groups, which are going to be rotated
+let floor_group_six = null;
+let group_six = null;
+let campUrl = "../Assets/Scene_6/campingTent/model.gltf";
+let moonUrl = {obj: "../Assets/Scene_6/moon.obj", mtl: "../Assets/Scene_6/moon.mtl"};
+let cliffGroup6 = new THREE.Object3D;
+let moonGroup = new THREE.Object3D;
+
+// object lists
+
 
 
 function main() {
@@ -298,8 +324,9 @@ async function loadWolfGLTF(configuration,sceneGroup) {
 
         object.action.play();
 
+        wolfGroup4.add(object);
         animatedObjects4.push(object);
-        sceneGroup.add(object);
+        sceneGroup.add(wolfGroup4);
         
 
         }
@@ -432,7 +459,6 @@ function createScene(canvas) {
 
     raycaster = new THREE.Raycaster();
 
-    orbitControls = new OrbitControls(camera, renderer.domElement);
 
 
     document.addEventListener('pointermove', onDocumentPointerMove);
@@ -445,13 +471,12 @@ function createScene(canvas) {
     createScene2();
     createScene3();
     createScene4();
+    createScene5();
+    createScene6();
 }
 
 function createScene1() {
     
-
-    //orbitControls = new OrbitControls(camera, renderer.domElement);
-
     scene_root_1 = new THREE.Object3D;
 
     spotLight = new THREE.SpotLight(0xfc6c49);
@@ -732,6 +757,166 @@ function createScene4() {
 }
 
 
+
+function createScene5() {
+    // load and play scene audio
+    audioLoader.load( FOREST_SOUND_URI, 
+        function( buffer ) {
+            scene_5_sound.setBuffer( buffer );
+            scene_5_sound.setLoop( true );
+            scene_5_sound.setVolume( 0.75 );
+            // sound.play();
+    },
+    // onProgress callback
+    function ( xhr ) {
+        console.log( 'AUDIO:', (xhr.loaded / xhr.total * 100) + '% loaded' );
+    },
+
+    // onError callback
+    function ( err ) {
+        console.log( 'AUDIO ERROR - An error happened' );
+    });
+
+    scene.add(camera);
+
+    
+        
+    // create root object to keep all objects of this scene
+    scene_root_5 = new THREE.Object3D;
+    
+    // add spotlights for hot color temp lighting on scene
+    spotLight1 = new THREE.SpotLight ( 0xF8B195 );
+    spotLight1.position.set(-6, 10, 35);
+    spotLight1.target.position.set(-6, 20, 20);
+    
+    spotLight2 = new THREE.SpotLight ( 0xF67280 );
+    spotLight2.position.set(-7, 12, 35);
+    spotLight2.target.position.set(-6, 20, 20);
+
+    scene_root_5.add(spotLight1);
+    scene_root_5.add(spotLight2);
+
+
+    spotLight1.castShadow = true;
+    spotLight1.shadow.camera.near = 1;
+    spotLight1.shadow.camera.far = 200;
+    spotLight1.shadow.camera.fov = 45;
+    spotLight1.shadow.mapSize.width = SHADOW_MAP_WIDTH;
+    spotLight1.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
+
+    spotLight2.castShadow = true;
+    spotLight2.shadow.camera.near = 1;
+    spotLight2.shadow.camera.far = 200;
+    spotLight2.shadow.camera.fov = 45;
+    spotLight2.shadow.mapSize.width = SHADOW_MAP_WIDTH;
+    spotLight2.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
+    // -------------------------------------------
+
+    
+
+    ambientLight = new THREE.AmbientLight ( 0x888888 );
+    scene_root_5.add(ambientLight);
+    
+    // object groups for hierarchy and management in master scene file
+    group_five = new THREE.Object3D;
+    floor_group_five = new THREE.Object3D;
+    
+    
+    // background image
+    createBackgroundImage(sunriseUrl, group_five);
+
+ 
+
+    // loading and adding sun
+    loadGLTF(sunUrl, { position: new THREE.Vector3(-7, 25, -42), scale: new THREE.Vector3(0.02, 0.02, 0.02), rotation: new THREE.Vector3(33, 0, 0) }, sunGroup5, group_five,true);
+
+
+    // loading and adding trees
+
+    // load and add rock that is mountain top
+    loadObjMtl(rock2ModelUrl, objectList, {position: new THREE.Vector3(111,0,-13), scale: new THREE.Vector3(22.0, 4.0, 8.0), rotation: new THREE.Vector3(0, 0, 0)} ,rockGroup5, group_five);
+
+    
+    
+    // load cilff/mountains for landscape
+    loadGLTF(cliffUrl, { position: new THREE.Vector3(-7, -20, -42), scale: new THREE.Vector3(10.0, 7.0, 7.0), rotation: new THREE.Vector3(0, 0, 0) }, cliffGroup, group_five,false);
+
+    group_five.position.x += 10;
+
+    setTimeout(() => {
+      document.getElementById('storyText').innerHTML = text_scene_3;  
+    },
+    3000);
+    scene_root_5.add(group_five);
+    scene_root_5.add(floor_group_five)
+}
+
+function createScene6() {
+    // load and play scene audio
+    audioLoader.load( CAMPFIRE_SOUND_URI, 
+        function( buffer ) {
+            scene_6_sound.setBuffer( buffer );
+            scene_6_sound.setLoop( true );
+            scene_6_sound.setVolume( 0.75 );
+            // sound.play();
+    },
+    // onProgress callback
+    function ( xhr ) {
+        console.log( 'AUDIO:', (xhr.loaded / xhr.total * 100) + '% loaded' );
+    },
+
+    // onError callback
+    function ( err ) {
+        console.log( 'AUDIO ERROR - An error happened' );
+    });
+
+    scene_root_6 = new THREE.Object3D;
+    
+    // add spotlights for hot color temp lighting on scene
+    spotLight1 = new THREE.SpotLight ( 0x355C7D );
+    spotLight1.position.set(-6, 10, 35);
+    spotLight1.target.position.set(-6, 20, 20);
+
+    scene_root_6.add(spotLight1);
+
+
+    spotLight1.castShadow = true;
+    spotLight1.shadow.camera.near = 1;
+    spotLight1.shadow.camera.far = 200;
+    spotLight1.shadow.camera.fov = 45;
+    spotLight1.shadow.mapSize.width = SHADOW_MAP_WIDTH;
+    spotLight1.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
+
+    
+
+    ambientLight = new THREE.AmbientLight ( 0x355C7D );
+    scene_root_6.add(ambientLight);
+    
+    // object groups for hierarchy and management in master scene file
+    group_six = new THREE.Object3D;
+    floor_group_six = new THREE.Object3D;
+    scene_root_6.add(group_six);
+    scene_root_6.add(floor_group_six)
+    
+    // background image
+    createBackgroundImage(waterUrl, group_six);
+
+
+    // load and put moon
+    loadObjMtl(moonUrl, objectList, { position: new THREE.Vector3(-55, 5, -40.5), scale: new THREE.Vector3(0.25, 0.25, 0.25), rotation: new THREE.Vector3(0, Math.PI, 0) }, moonGroup, scene_root_6);
+    
+    // load campsite
+    loadGLTF(campUrl, { position: new THREE.Vector3(-9, -3, 15), scale: new THREE.Vector3(4.5, 4.5, 4.5), rotation: new THREE.Vector3(0, Math.PI, 0) }, cliffGroup6, scene_root_6 ,false);
+
+    group_six.position.x += 10;
+
+    setTimeout(() => {
+      document.getElementById('storyText').innerHTML = text_scene_6;  
+    },
+    3000);
+    
+}
+
 function createTextScene1() {
     setTimeout(() => {
         document.getElementById('storyText').innerHTML = text_scene_1;     
@@ -744,7 +929,6 @@ function createTextScene2() {
         document.getElementById('storyText').innerHTML = text_scene_2;     
     },
     2000);
-}
 
 function createTextScene3() {
     setTimeout(() => {
@@ -783,7 +967,6 @@ function update() {
     animate();
     checkSceneTransition();
 
-    orbitControls.update();
 }
 
 async function animate() {
@@ -876,6 +1059,10 @@ function animateScene4() {
         if (object.mixer)
             object.mixer.update(deltat * 0.001);
     }
+}
+
+function animateScene5() {
+
 }
 
 function createLakeSurface(waterUrl, group) {
@@ -1022,7 +1209,32 @@ if (lastSceneTransition){
                     scene.add(scene_root_3)
                 }
                 break;
-    
+            case 3:
+                beeGroup.position.z -= 1.5;
+                camera.position.z -= 1;
+                if (camera.position.z < -30){
+                    scene.remove(scene_root_5);
+                    lastSceneTransition = false;
+                    beeGroup.position.z = 10;
+                    charGroup4.position.set(0, floor, 10);
+                    wolfGroup4.position.set(0, floor, 20);
+                    camera.position.set(0, 6, 35);
+                    scene.add(scene_root_4)
+                }
+                break;
+            case 4:
+                    beeGroup.position.z -= 1.5;
+                    camera.position.z -= 1;
+                    if (camera.position.z < -30){
+                        scene.remove(scene_root_6);
+                        lastSceneTransition = false;
+                        beeGroup.position.z = 10;
+                        charGroup4.position.set(0, floor, 10);
+                        wolfGroup4.position.set(0, floor, 20);
+                        camera.position.set(0, 6, 35);
+                        scene.add(scene_root_5)
+                    }
+                    break;
                     
         }
     }
@@ -1063,8 +1275,28 @@ if (nextSceneTransition){
                 scene.add(scene_root_4);
             }
             break;
-
-                
+        case 4:
+            beeGroup.position.z -= 1.5;
+            camera.position.z -= 1;
+            if (camera.position.z < -30){
+                scene.remove(scene_root_4);
+                nextSceneTransition = false;
+                beeGroup.position.z = 10;
+                camera.position.set(0, 6, 35);
+                scene.add(scene_root_5);
+            }
+            break;
+        case 5:
+            beeGroup.position.z -= 1.5;
+            camera.position.z -= 1;
+            if (camera.position.z < -30){
+                scene.remove(scene_root_5);
+                nextSceneTransition = false;
+                beeGroup.position.z = 10;
+                camera.position.set(0, 6, 35);
+                scene.add(scene_root_6);
+            }
+            break;                
     }
 }
 }
