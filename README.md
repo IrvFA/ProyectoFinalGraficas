@@ -10,6 +10,7 @@ Proyecto final de la materia gráficas computacionales
 ## Requerimientos funcionales del proyecto
 * Colocar objetos correspondientes (incluyendo modelos) a cada escena: escalarlos (si aplica), ponerles sus texturas, iluminar escenas.
 * Agregar texto a la escena
+* Agregar sonidos de ambiente a las escenas
 * Pase de un cuadro a otro - mover la cámara
 * Animación
   * Traslación
@@ -20,6 +21,8 @@ Proyecto final de la materia gráficas computacionales
 * Los assets necesarios se han obtenido en sitios sugeridos por el instructor, como _Turbosquid_, _cgtrader_, así como sitios adicionales como _pngtree_. Three.js ya provee los métodos necesarios para agregar estos a la escena, agruparlos según sea necesario, escalarlos, colocarlos en cierta posición e incluso trasladarlos.
 
 * Para modelos que cuenten con animaciones, también puede emplearse el AnimationMixer que ya provee Three.js
+
+* Para el audio, Three.js usa el _Web Audio API_ y provee un listener y un loader, por lo que no es necesario el uso de librerías externas para su implementación. Solamente se buscaron y descargaron los archivos de audio.
 
 ## Plan de trabajo
 ### Milestones para alcanzar/entregar semana 11 (Apr 29).
