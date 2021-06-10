@@ -60,7 +60,9 @@ const audioListener = new THREE.AudioListener();
 const sound = new THREE.Audio(audioListener);
 const audioLoader = new THREE.AudioLoader();
 
-const text_scene_3 = "Hoal";
+const text_scene_3 = `They soon reched a peaceful lake. They were the only ones there.
+Time flew. The lake and the forest blended as one.
+It was just them and the lake.`;
 
 
 function main() 
@@ -265,7 +267,12 @@ function createScene3(canvas)
 
     group.position.x += 10;
 
-    document.getElementById('storyText').innerHTML = text_scene_3;
+    setTimeout(() => {
+      document.getElementById('storyText').innerHTML = text_scene_3;  
+    },
+    3000);
+    
+    
     
     // apparently nothing happens if we comment out scene.add(group)
     // NOTE that @ 243 there is a root.add(group)
