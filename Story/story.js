@@ -104,8 +104,10 @@ let scene_root_4 = null;
 let floor_group_four = null;
 let group_four = null;
 let sunGroup4 = new THREE.Object3D;
+let charGroup4 = new THREE.Object3D;
 let treeGroup4 = new THREE.Object3D;
 let characterWalkingUrl = "../Assets/Scene_4/Walking.fbx";
+let wolfUrl = "../Assets/Scene_4/Wolf.glb"
 
 
 function main() {
@@ -243,6 +245,35 @@ async function loadBirdsGLTF() {
 
         });
     }
+    catch (err) {
+        console.error(err);
+    }
+}
+
+async function loadWolfGLTF(configuration,sceneGroup) {
+    try {
+        const gltfLoader = new GLTFLoader();
+        const result = await gltfLoader.loadAsync(wolfUrl);
+
+        const object = result.scene.children[0];
+
+        setVectorValue(object.position, configuration, 'position', new THREE.Vector3(0, 0, 0));
+        setVectorValue(object.scale, configuration, 'scale', new THREE.Vector3(1, 1, 1));
+        setVectorValue(object.rotation, configuration, 'rotation', new THREE.Vector3(0, 0, 0));
+
+        object.castShadow = true;
+        object.receiveShadow = true;
+
+        object.mixer = new THREE.AnimationMixer(scene);
+        object.action = object.mixer.clipAction(result.animations[1], object).setDuration(1.0);
+
+        object.action.play();
+
+        animatedObjects4.push(object);
+        sceneGroup.add(object);
+        
+
+        }
     catch (err) {
         console.error(err);
     }
@@ -570,7 +601,7 @@ function createScene4() {
     audioLoader.load( TRAIL_FOOTSTEPS_SOUND_URI, 
         function( buffer ) {
             sound.setBuffer( buffer );
-            sound.setLoop( true );
+            sound.setLoop( false );
             sound.setVolume( 0.75 );
             // sound.play();
     },
@@ -622,7 +653,7 @@ function createScene4() {
 
     // loading and adding sun
     loadGLTF(sunUrl, { position: new THREE.Vector3(35, 25, -60), scale: new THREE.Vector3(0.02, 0.02, 0.02), rotation: new THREE.Vector3(33, 0, 0) }, sunGroup4, group_four ,true);
-
+    loadWolfGLTF({position: new THREE.Vector3(0, floor, 20), scale: new THREE.Vector3(4.5, 4.5, 4.5), rotation:  new THREE.Vector3(0,-90,0)}, group_four);
 
     // loading and adding trees
     // front row
@@ -655,8 +686,8 @@ function createScene4() {
         y_displacement += 1;
     }
 
-    loadCharFBX(characterWalkingUrl, {position: new THREE.Vector3(0, floor, 10), scale: new THREE.Vector3(0.03, 0.03, 0.03), rotation:  new THREE.Vector3(0,90,0)}, animatedObjects3, charGroup3, group_three)
-
+    loadCharFBX(characterWalkingUrl, {position: new THREE.Vector3(0, floor, 10), scale: new THREE.Vector3(0.03, 0.03, 0.03), rotation:  new THREE.Vector3(0,-90,0)}, animatedObjects4, charGroup4, group_four)
+    scene_root_4.add(charGroup4);
 
 
 
@@ -771,6 +802,8 @@ function animateScene4() {
     const deltat = now - currentTime;
     currentTime = now;
     for (const object of animatedObjects4) {
+        object.position.x -= 0.001 * deltat;
+        object.position.y += 0.0001 * deltat;
         if (object.mixer)
             object.mixer.update(deltat * 0.001);
     }
