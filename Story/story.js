@@ -9,8 +9,12 @@ import { MTLLoader } from '../libs/three.js/r125/loaders/MTLLoader.js';
 /**
  Complete Story Assets
  */
+ const canvas = document.getElementById("webglcanvas");
+
+
 let renderer = null, scene = null, camera = null, orbitControls = null;
 let scene_root_1 = null, group_one = null, scene_root_2 = null, group_two = null;
+let scene_root_3 = null, group_three
 
 let objectList = [];
 
@@ -19,7 +23,9 @@ let currentTime = Date.now();
 let spotLight = null, ambientLight = null;
 
 let raycaster = null, mouse = new THREE.Vector2(), intersected, clicked;
-let nextSceneTransition = false, currentScene= 0, lastSceneTransition = false;
+let nextSceneTransition = false, currentScene= 2, lastSceneTransition = false;
+
+let beeGroup = new THREE.Object3D;
 
 /*
 SCENE 1 ASSETS
@@ -50,13 +56,31 @@ let treeGroup = new THREE.Object3D;
 let mountainGroup = new THREE.Object3D;
 let sunGroup2 = new THREE.Object3D;
 let carGroup2 = new THREE.Object3D;
+let animatedObjects2 = [];
 let mountainUrl = {obj: "../Assets/Scene_2/mountain_asset/lowpolymountains.obj", mtl: "../Assets/Scene_2/mountain_asset/lowpolymountains.mtl"}
+let characterUrl = "../Assets/Scene_2/characterLooking.fbx"
+let charGroup = new THREE.Object3D;
+let charLoaded = false;
 
+/*
+SCENE 3 ASSETS
+*/
 
+// master/root groups/objects
+let objectList3 = [];
+let animatedObjects3 = []
+let waterUrl = "../Assets/Scene_3/waterTexture.png";
+let rockGroup3= new THREE.Object3D;
+let treeGroup3 = new THREE.Object3D;
+let sunGroup3 = new THREE.Object3D;
+let charGroup3 = new THREE.Object3D;
+let characterThrowingUrl = "../Assets/Scene_3/Throwing.fbx"
+const text_scene_3 = `They soon reached a peaceful lake. They were the only ones there.
+Time flew. The lake and the forest blended as one.
+It was just them and the lake.`;
 
 
 function main() {
-    const canvas = document.getElementById("webglcanvas");
 
     createScene(canvas);
 
@@ -93,8 +117,31 @@ function onProgress(xhr) {
 }
 
 function onDocumentPointerMove(event) {
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+    mouse.x = ((event.clientX - canvas.offsetLeft) / window.innerWidth) * 2 - 1;
+    mouse.y = - ((event.clientY - canvas.offsetTop) / window.innerHeight) * 2 + 1;
+
+    console.log(event.movementY)
+
+    let vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+    vector.unproject(camera);
+    let dir = vector.sub( camera.position ).normalize();
+    let distance = - camera.position.z / dir.z;
+    let pos = camera.position.clone().add( dir.multiplyScalar(distance));
+    beeGroup.position.copy(pos);
+
+    if (beeGroup.position.y < floor)
+        beeGroup.position.y = floor + 0.5;
+
+    if (event.movementX > 0) {
+        //beeGroup.children[0].rotation.y = 90;
+        if(event.movementY > 1) beeGroup.children[0].rotation.set(90, 45, 0);
+        else if(event.movementY < 1) beeGroup.children[0].rotation.set(-90, 45, 0);
+    }else if (event.movementX < 0){ 
+        //beeGroup.children[0].rotation.y = -90 
+        if(event.movementY > 1) beeGroup.children[0].rotation.set(90, -45, 0);
+        else if(event.movementY < 1) beeGroup.children[0].rotation.set(-90, -45, 0);
+    }
+    
 
     raycaster.setFromCamera(mouse, camera);
 
@@ -173,7 +220,25 @@ async function loadBirdsGLTF() {
     }
 }
 
-async function loadFBX(fbxModelUrl, configuration)
+async function loadFBX(fbxModelUrl, configuration, objectGroup)
+{
+    try{
+        let object = await new FBXLoader().loadAsync(fbxModelUrl);
+
+        setVectorValue(object.position, configuration, 'position', new THREE.Vector3(0,0,0));
+        setVectorValue(object.scale, configuration, 'scale', new THREE.Vector3(1, 1, 1));
+        setVectorValue(object.rotation, configuration, 'rotation', new THREE.Vector3(0,0,0));
+
+        objectGroup.add(object);
+        scene.add( objectGroup );
+    }
+    catch(err)
+    {
+        console.error( err );
+    }
+}
+
+async function loadCharFBX(fbxModelUrl, configuration, animationArray, objGroup,sceneGroup)
 {
     try{
         let object = await new FBXLoader().loadAsync(fbxModelUrl);
@@ -182,7 +247,13 @@ async function loadFBX(fbxModelUrl, configuration)
         setVectorValue(object.scale, configuration, 'scale', new THREE.Vector3(1, 1, 1));
         setVectorValue(object.rotation, configuration, 'rotation', new THREE.Vector3(0,0,0));
         
-        scene.add( object );
+        object.mixer = new THREE.AnimationMixer(scene);
+        object.action = object.mixer.clipAction(object.animations[0], object).setDuration(3.0);
+
+        object.action.play();
+        animationArray.push(object);
+        objGroup.add(object);
+        sceneGroup.add(objGroup);
     }
     catch(err)
     {
@@ -263,21 +334,29 @@ function createScene(canvas) {
     scene = new THREE.Scene();
     scene.background = canvasTexture;
 
+
+
     camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 1, 4000);
     camera.position.set(0, 10, 35);
     camera.rotation.x = -Math.PI / 12;
+    raycaster = new THREE.Raycaster();
 
-    loadFBX(beeUrl, {position: new THREE.Vector3(0, 5, 10), scale: new THREE.Vector3(0.01, 0.01, 0.01), rotation: new THREE.Vector3(0,0,0)});
+    orbitControls = new OrbitControls(camera, renderer.domElement);
+
+
+    document.addEventListener('pointermove', onDocumentPointerMove);
+    document.addEventListener('pointerdown', onDocumentPointerDown);
+    loadFBX(beeUrl, {position: new THREE.Vector3(0, 5, 10), scale: new THREE.Vector3(0.01, 0.01, 0.01), rotation: new THREE.Vector3(0, 0,0)}, beeGroup);
 
     scene.add(camera);
 
-    createScene1()
+    createScene3()
 }
 
 function createScene1() {
     
 
-    orbitControls = new OrbitControls(camera, renderer.domElement);
+    //orbitControls = new OrbitControls(camera, renderer.domElement);
 
     scene_root_1 = new THREE.Object3D;
 
@@ -296,10 +375,7 @@ function createScene1() {
 
     ambientLight = new THREE.AmbientLight(0x888888);
     scene_root_1.add(ambientLight);
-    raycaster = new THREE.Raycaster();
-
-    document.addEventListener('pointermove', onDocumentPointerMove);
-    document.addEventListener('pointerdown', onDocumentPointerDown);
+    
 
     group_one = new THREE.Object3D;
     createFloor(roadMapUrl);
@@ -328,10 +404,10 @@ function createScene1() {
 }
 
 function createScene2() {
-    camera.position.set(0, 6, 20);
+    camera.position.set(0, 6, 35);
     scene_root_2 = new THREE.Object3D;
     spotLight = new THREE.SpotLight ("white");
-    spotLight.position.set(-6, 10, 25);
+    spotLight.position.set(-6, 10, 30);
     spotLight.target.position.set(-6, 20, 20);
     scene_root_2.add(spotLight);
 
@@ -358,10 +434,13 @@ function createScene2() {
     }
 
     
+    loadObjMtl(carModelUrl, objectList, { position: new THREE.Vector3(0, floor, 20), scale: new THREE.Vector3(0.025, 0.025, 0.025), rotation: new THREE.Vector3(0, -90, 0) }, carGroup2, group_two);
+    charLoaded = true;
+    console.log(charGroup);
+    carGroup2.animation = true;
+    carGroup2.position.x = 10;
 
-    loadObjMtl(carModelUrl, objectList, { position: new THREE.Vector3(-5, floor,-10), scale: new THREE.Vector3(0.025, 0.025, 0.025), rotation: new THREE.Vector3(0, 0, 0) }, carGroup2, group_two);
-
-
+    console.log(group_two);
 
     loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-50,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup, group_two);
     loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-10,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup, group_two);
@@ -379,6 +458,81 @@ function createScene2() {
     
 }
 
+function createScene3() {
+    camera.position.set(0, 6, 35);
+    document.getElementById('storyText').innerHTML = text_scene_3;  
+    scene_root_3 = new THREE.Object3D;
+    
+    // add lighting to scene
+    spotLight = new THREE.SpotLight ("white");
+    spotLight.position.set(-6, 10, 35);
+    spotLight.target.position.set(-6, 20, 20);
+    scene_root_3.add(spotLight);
+    spotLight.castShadow = true;
+    spotLight.shadow.camera.near = 1;
+    spotLight.shadow.camera.far = 200;
+    spotLight.shadow.camera.fov = 45;
+    
+    spotLight.shadow.mapSize.width = SHADOW_MAP_WIDTH;
+    spotLight.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
+
+    ambientLight = new THREE.AmbientLight ( 0x888888 );
+    scene_root_3.add(ambientLight);
+    
+    //loadGLTF();
+
+    
+    group_three = new THREE.Object3D;
+    scene_root_3.add(group_three);
+    
+    
+    
+
+
+    // floor with grass
+    createGrassFloor(grassUrl, group_three);
+    createLakeSurface(waterUrl, group_three);
+
+    let positionZ = 10;
+    let positionX = 0;
+    let pinePosition = -10;
+    let i = 0;
+    for (i; i<5; i++){
+        loadObjMtl(pineTreeModelUrl, objectList,{ position: new THREE.Vector3(-5, floor, positionZ), scale: new THREE.Vector3(1, 1, 1), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup3, group_three);
+        loadObjMtl(pineTreeModelUrl, objectList,{ position: new THREE.Vector3(-30, floor, positionZ ), scale: new THREE.Vector3(1, 1, 1), rotation: new THREE.Vector3(0, 0, 0) }, treeGroup3, group_three);
+        loadObjMtl(rock2ModelUrl, objectList, {position: new THREE.Vector3(positionX,floor, -12), scale: new THREE.Vector3(4.0, 4.0, 4.0), rotation: new THREE.Vector3(0, 0, 0)} ,rockGroup3, group_three);
+
+        positionX+=5;
+        positionZ+=4;
+    }
+
+    loadCharFBX(characterThrowingUrl, {position: new THREE.Vector3(-15, floor, 10), scale: new THREE.Vector3(0.03, 0.03, 0.03), rotation:  new THREE.Vector3(0,90,0)}, animatedObjects3, charGroup3, group_three)
+
+    console.log(charGroup3);
+    loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-50,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup, group_three);
+    loadObjMtl(mountainUrl,objectList, { position: new THREE.Vector3(-10,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup, group_three);
+    loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(30, floor,-40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup, group_three);
+    loadObjMtl(mountainUrl,objectList,{ position: new THREE.Vector3(60,floor, -40), scale: new THREE.Vector3(2.5, 2.5, 2.5), rotation: new THREE.Vector3(0, 0, 0) }, mountainGroup, group_three);
+
+    loadGLTF(sunUrl, { position: new THREE.Vector3(-5, 15, -60), scale: new THREE.Vector3(0.02, 0.02, 0.02), rotation: new THREE.Vector3(33, 0, 0) }, sunGroup3, group_three ,true);
+
+    
+
+    group_three.position.x += 10;
+
+    
+    
+    
+    
+    // apparently nothing happens if we comment out scene.add(group)
+    // NOTE that @ 243 there is a root.add(group)
+    //  i.e., group is part of root
+    // scene.add(group);
+    
+    // if we comment out this line, it all disappears
+    scene.add( scene_root_3 );
+}
+
 function update() {
     requestAnimationFrame(function () { update(); });
 
@@ -394,8 +548,13 @@ async function animate() {
     switch (currentScene) {
         case 0:
             animateScene1();
+            break;
         case 1:
             animateScene2();
+            break;
+        case 2:
+            animateScene3();
+            break;
     }
 }
 
@@ -430,9 +589,56 @@ function animateScene1() {
 }
 
 function animateScene2() {
+    const now = Date.now();
+    const deltat = now - currentTime;
+    currentTime = now;
+
+    if (carGroup2.animation == true){
+    carGroup2.position.x -= 0.07;
+    carGroup2.position.z -= 0.07;
+    }
+    if(carGroup2.position.x< -5){
+        carGroup2.animation = false;
+        if(charLoaded){
+            loadCharFBX(characterUrl, {position : new THREE.Vector3(-10, floor, 15), scale: new THREE.Vector3(0.03, 0.03, 0.03), rotation: new THREE.Vector3(0,0,0)}, animatedObjects2, charGroup, group_two);
+            charLoaded = false;
+        }
+    }
+
+    for (const object of animatedObjects2) {
+        if (object.mixer)
+            object.mixer.update(deltat * 0.001);
+    }
+    
+}
+
+function animateScene3() {
+    const now = Date.now();
+    const deltat = now - currentTime;
+    currentTime = now;
+    for (const object of animatedObjects3) {
+        if (object.mixer)
+            object.mixer.update(deltat * 0.001);
+    }
 
 }
 
+function createLakeSurface(waterUrl, group) {
+    const map = new THREE.TextureLoader().load(waterUrl);
+    
+  
+    const planeGeometry = new THREE.PlaneGeometry(115, 85, 50, 50);
+    const lakeSurface = new THREE.Mesh(planeGeometry, new THREE.MeshPhongMaterial({map:map, side:THREE.DoubleSide}));
+  
+    lakeSurface.rotation.x = -Math.PI / 2;
+    lakeSurface.position.y = floor+0.1;
+    lakeSurface.position.x = 10;
+    lakeSurface.position.z = -40;
+    
+    group.add( lakeSurface );
+    lakeSurface.castShadow = false;
+    lakeSurface.receiveShadow = true;
+  }
 
 function createFloor(floorMapUrl) {
     const map = new THREE.TextureLoader().load(floorMapUrl);
@@ -527,13 +733,25 @@ function checkSceneTransition() {
 if (nextSceneTransition){
     switch (currentScene){
         case 1:
+            beeGroup.position.z -= 1.5;
             camera.position.z -= 1;
             if (camera.position.z < -30){
                 scene.remove(scene_root_1);
                 nextSceneTransition = false;
+                beeGroup.position.z = 10;
                 createScene2();
             }
             break;
+        case 2:
+            beeGroup.position.z -= 1.5;
+            camera.position.z -= 1;
+            if (camera.position.z < -30){
+                scene.remove(scene_root_2);
+                nextSceneTransition = false;
+                beeGroup.position.z = 10;
+                createScene3();
+            }
+
                 
     }
 }
