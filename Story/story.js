@@ -142,9 +142,6 @@ let cliffUrl = "../Assets/Scene_5/mountainLandscape/model.gltf";
 let sunGroup5 = new THREE.Object3D;
 let cliffGroup = new THREE.Object3D;
 let rockGroup5 = new THREE.Object3D;
-let moonGroup5 = new THREE.Object3D;
-let charGroup5v = new THREE.Object3D;
-let charShoutingUrl = "Assets/Scene_5/Sitting Laughing.fbx";
 /**
  * Scene 6 Assets
  */
@@ -838,8 +835,6 @@ function createScene5() {
 
     // load and add rock that is mountain top
     loadObjMtl(rock2ModelUrl, objectList, {position: new THREE.Vector3(111,0, -8), scale: new THREE.Vector3(22.0, 4.0, 8.0), rotation: new THREE.Vector3(0, 0, 0)} ,rockGroup5, group_five);
-
-    loadCharFBX(characterWalkingUrl, {position: new THREE.Vector3(0, floor, 10), scale: new THREE.Vector3(0.03, 0.03, 0.03), rotation:  new THREE.Vector3(0,-90,0)}, animatedObjects4, charGroup4, group_four)
     
     // load cilff/mountains for landscape
     loadGLTF(cliffUrl, { position: new THREE.Vector3(-7, -20, -42), scale: new THREE.Vector3(10.0, 7.0, 7.0), rotation: new THREE.Vector3(0, 0, 0) }, cliffGroup, group_five,false);
