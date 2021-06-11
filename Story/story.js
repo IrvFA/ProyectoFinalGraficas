@@ -1349,7 +1349,7 @@ window.onload = () => {
         function( buffer ) {
             music_sound.setBuffer( buffer );
             music_sound.setLoop( true );
-            music_sound.setVolume( 0.25 );
+            music_sound.setVolume( 0.5 );
             music_sound.play();
     },
     // onProgress callback
