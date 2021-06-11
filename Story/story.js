@@ -30,7 +30,8 @@ let beeGroup = new THREE.Object3D;
 /**
  * AUDIO ASSETS
  */
- const audioListener = new THREE.AudioListener();
+ 
+ const MUSIC = '../Assets/audio/music.ogg';const audioListener = new THREE.AudioListener();
  const music_sound = new THREE.Audio(audioListener);
  const scene_1_sound = new THREE.Audio(audioListener);
  const scene_2_sound = new THREE.Audio(audioListener);
@@ -520,6 +521,11 @@ function createScene1() {
     group_one.position.x += 10;
     scene_root_1.add(group_one);
     scene.add(scene_root_1);
+
+    setTimeout(() => {
+        document.getElementById('storyText').innerHTML = text_scene_1;     
+    },
+    2000);
 }
 
 function createScene2() {
@@ -675,16 +681,6 @@ function createScene3() {
 
     group_three.position.x += 10;
 
-    
-    
-    
-    
-    // apparently nothing happens if we comment out scene.add(group)
-    // NOTE that @ 243 there is a root.add(group)
-    //  i.e., group is part of root
-    // scene.add(group);
-    
-    // if we comment out this line, it all disappears
 }
 
 function createScene4() {
@@ -784,11 +780,6 @@ function createScene4() {
 
     group_four.position.x += 10;
 
-    // delayed text creation
-    setTimeout(() => {
-      document.getElementById('storyText').innerHTML = text_scene_4;  
-    },
-    2000);
     
 }
 
@@ -877,10 +868,6 @@ function createScene5() {
 
     group_five.position.x += 10;
 
-    setTimeout(() => {
-      document.getElementById('storyText').innerHTML = text_scene_3;  
-    },
-    3000);
     scene_root_5.add(group_five);
     scene_root_5.add(floor_group_five)
 }
@@ -944,19 +931,10 @@ function createScene6() {
 
     group_six.position.x += 10;
 
-    setTimeout(() => {
-      document.getElementById('storyText').innerHTML = text_scene_6;  
-    },
-    3000);
-    
+
 }
 
-function createTextScene1() {
-    setTimeout(() => {
-        document.getElementById('storyText').innerHTML = text_scene_1;     
-    },
-    2000);
-}
+
 
 function createTextScene2() {
     setTimeout(() => {
@@ -1301,7 +1279,6 @@ if (nextSceneTransition){
                 scene.add(scene_root_3);
                 createTextScene3();
                 scene_3_sound.play();
-                createTextScene3(); 
             }
             break;
         case 3:
@@ -1368,6 +1345,22 @@ window.onload = () => {
     main();
     resize();
     initControls();
+    audioLoader.load( MUSIC, 
+        function( buffer ) {
+            music_sound.setBuffer( buffer );
+            music_sound.setLoop( true );
+            music_sound.setVolume( 0.25 );
+            music_sound.play();
+    },
+    // onProgress callback
+    function ( xhr ) {
+        console.log( 'AUDIO:', (xhr.loaded / xhr.total * 100) + '% loaded' );
+    },
+
+    // onError callback
+    function ( err ) {
+        console.log( 'AUDIO ERROR - An error happened' );
+    });
 };
 
 
