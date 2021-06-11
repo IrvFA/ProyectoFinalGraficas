@@ -1189,6 +1189,7 @@ function checkSceneTransition() {
 if (lastSceneTransition){
         switch (currentScene){
             case 0:
+                scene_2_sound.stop();
                 beeGroup.position.z -= 1.5;
                 camera.position.z -= 1;
                 if (camera.position.z < -30){
@@ -1198,9 +1199,11 @@ if (lastSceneTransition){
                     carGroup.position.set(0,floor+2, 10);
                     camera.position.set(0, 6, 35);
                     scene.add(scene_root_1)
+                    createTextScene1();
                 }
                 break;
             case 1:
+                scene_3_sound.stop();
                 beeGroup.position.z -= 1.5;
                 camera.position.z -= 1;
                 if (camera.position.z < -30){
@@ -1209,9 +1212,12 @@ if (lastSceneTransition){
                     beeGroup.position.z = 10;
                     camera.position.set(0, 6, 35);
                     scene.add(scene_root_2)
+                    createTextScene2();
+                    scene_2_sound.play();
                 }
                 break;
             case 2:
+                scene_4_sound.stop()
                 beeGroup.position.z -= 1.5;
                 camera.position.z -= 1;
                 if (camera.position.z < -30){
@@ -1220,9 +1226,12 @@ if (lastSceneTransition){
                     beeGroup.position.z = 10;
                     camera.position.set(0, 6, 35);
                     scene.add(scene_root_3)
+                    createTextScene3();
+                    scene_3_sound.play();
                 }
                 break;
             case 3:
+                scene_5_sound.stop();
                 beeGroup.position.z -= 1.5;
                 camera.position.z -= 1;
                 if (camera.position.z < -30){
@@ -1233,9 +1242,12 @@ if (lastSceneTransition){
                     wolfGroup4.position.set(0, floor, 20);
                     camera.position.set(0, 6, 35);
                     scene.add(scene_root_4)
+                    createTextScene4();
+                    scene_4_sound.play();
                 }
                 break;
             case 4:
+                    scene_6_sound.stop();
                     beeGroup.position.z -= 1.5;
                     camera.position.z -= 1;
                     if (camera.position.z < -30){
@@ -1246,6 +1258,8 @@ if (lastSceneTransition){
                         wolfGroup4.position.set(0, floor, 20);
                         camera.position.set(0, 6, 35);
                         scene.add(scene_root_5)
+                        createTextScene5();
+                        scene_5_sound.play();
                     }
                     break;
                     
