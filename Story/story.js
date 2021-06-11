@@ -530,7 +530,7 @@ function createScene1() {
 
 function createScene2() {
     // load and play scene audio
-    audioLoader.load( FOREST_SOUND_URI, 
+    audioLoader.load( BIRD_SOUND_URI, 
         function( buffer ) {
             scene_2_sound.setBuffer( buffer );
             scene_2_sound.setLoop( true );
@@ -604,7 +604,7 @@ function createScene2() {
 
 function createScene3() {
     // load and play scene audio
-    audioLoader.load( FOREST_SOUND_URI, 
+    audioLoader.load( LAKE_SOUND_URI, 
         function( buffer ) {
             scene_3_sound.setBuffer( buffer );
             scene_3_sound.setLoop( true );
