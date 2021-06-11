@@ -523,6 +523,24 @@ function createScene1() {
 }
 
 function createScene2() {
+    // load and play scene audio
+    audioLoader.load( FOREST_SOUND_URI, 
+        function( buffer ) {
+            scene_2_sound.setBuffer( buffer );
+            scene_2_sound.setLoop( true );
+            scene_2_sound.setVolume( 0.75 );
+            // scene_2_sound.play();
+    },
+    // onProgress callback
+    function ( xhr ) {
+        console.log( 'AUDIO:', (xhr.loaded / xhr.total * 100) + '% loaded' );
+    },
+
+    // onError callback
+    function ( err ) {
+        console.log( 'AUDIO ERROR - An error happened' );
+    });
+
     camera.position.set(0, 6, 35);
     scene_root_2 = new THREE.Object3D;
     spotLight = new THREE.SpotLight ("white");
@@ -579,6 +597,24 @@ function createScene2() {
 }
 
 function createScene3() {
+    // load and play scene audio
+    audioLoader.load( FOREST_SOUND_URI, 
+        function( buffer ) {
+            scene_3_sound.setBuffer( buffer );
+            scene_3_sound.setLoop( true );
+            scene_3_sound.setVolume( 0.75 );
+            // scene_3_sound.play();
+    },
+    // onProgress callback
+    function ( xhr ) {
+        console.log( 'AUDIO:', (xhr.loaded / xhr.total * 100) + '% loaded' );
+    },
+
+    // onError callback
+    function ( err ) {
+        console.log( 'AUDIO ERROR - An error happened' );
+    });
+
     camera.position.set(0, 6, 35); 
     scene_root_3 = new THREE.Object3D;
     
@@ -657,7 +693,7 @@ function createScene4() {
             scene_4_sound.setBuffer( buffer );
             scene_4_sound.setLoop( true );
             scene_4_sound.setVolume( 0.75 );
-            scene_4_sound.play();
+            // scene_4_sound.play();
     },
     // onProgress callback
     function ( xhr ) {
@@ -765,7 +801,7 @@ function createScene5() {
             scene_5_sound.setBuffer( buffer );
             scene_5_sound.setLoop( true );
             scene_5_sound.setVolume( 0.75 );
-            // sound.play();
+            // scene_5_sound.play();
     },
     // onProgress callback
     function ( xhr ) {
@@ -855,8 +891,8 @@ function createScene6() {
         function( buffer ) {
             scene_6_sound.setBuffer( buffer );
             scene_6_sound.setLoop( true );
-            scene_6_sound.setVolume( 0.75 );
-            // sound.play();
+            scene_6_sound.setVolume( 0.5 );
+            // scene_6_sound.play();
     },
     // onProgress callback
     function ( xhr ) {
@@ -1249,9 +1285,12 @@ if (nextSceneTransition){
                 camera.position.set(0, 6, 35);
                 charLoaded = true;
                 scene.add(scene_root_2);
+                createTextScene2();
+                scene_2_sound.play();
             }
             break;
         case 2:
+            scene_2_sound.stop();
             beeGroup.position.z -= 1.5;
             camera.position.z -= 1;
             if (camera.position.z < -30){
@@ -1260,10 +1299,13 @@ if (nextSceneTransition){
                 beeGroup.position.z = 10;
                 camera.position.set(0, 6, 35);
                 scene.add(scene_root_3);
+                createTextScene3();
+                scene_3_sound.play();
                 createTextScene3(); 
             }
             break;
         case 3:
+            scene_3_sound.stop();
             beeGroup.position.z -= 1.5;
             camera.position.z -= 1;
             if (camera.position.z < -30){
@@ -1272,9 +1314,12 @@ if (nextSceneTransition){
                 beeGroup.position.z = 10;
                 camera.position.set(0, 6, 35);
                 scene.add(scene_root_4);
+                createTextScene4();
+                scene_4_sound.play();
             }
             break;
         case 4:
+            scene_4_sound.stop();
             beeGroup.position.z -= 1.5;
             camera.position.z -= 1;
             if (camera.position.z < -30){
@@ -1283,9 +1328,12 @@ if (nextSceneTransition){
                 beeGroup.position.z = 10;
                 camera.position.set(0, 6, 35);
                 scene.add(scene_root_5);
+                createTextScene5();
+                scene_5_sound.play();
             }
             break;
         case 5:
+            scene_5_sound.stop();
             beeGroup.position.z -= 1.5;
             camera.position.z -= 1;
             if (camera.position.z < -30){
@@ -1294,6 +1342,8 @@ if (nextSceneTransition){
                 beeGroup.position.z = 10;
                 camera.position.set(0, 6, 35);
                 scene.add(scene_root_6);
+                createTextScene6();
+                scene_6_sound.play();
             }
             break;                
     }
