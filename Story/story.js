@@ -935,6 +935,12 @@ function createScene6() {
 }
 
 
+function createTextScene1() {
+    setTimeout(() => {
+        document.getElementById('storyText').innerHTML = text_scene_1;     
+    },
+    2000);
+} 
 
 function createTextScene2() {
     setTimeout(() => {
